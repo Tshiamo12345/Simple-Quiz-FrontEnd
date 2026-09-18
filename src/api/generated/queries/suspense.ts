@@ -1,0 +1,9 @@
+// generated with @7nohe/openapi-react-query-codegen@3.0.2 
+
+import { useSuspenseQuery, type UseSuspenseQueryOptions } from "@tanstack/react-query";
+import { getAllQuizQuestions, getQuizzes, type Options } from "../requests/sdk.gen";
+import type { GetAllQuizQuestionsData, GetQuizzesData } from "../requests/types.gen";
+import * as Common from "./common";
+
+export const useGetQuizzesSuspense = <TData = NonNullable<Common.GetQuizzesDefaultResponse>, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>(clientOptions: Options<GetQuizzesData, true> = {}, queryKey?: TQueryKey, options?: Omit<UseSuspenseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useSuspenseQuery<TData, TError>({ queryKey: Common.UseGetQuizzesKeyFn(clientOptions, queryKey), queryFn: ({ signal }) => getQuizzes({ ...clientOptions, signal, throwOnError: true }).then(response => response.data as TData) as TData, ...options });
+export const useGetAllQuizQuestionsSuspense = <TData = NonNullable<Common.GetAllQuizQuestionsDefaultResponse>, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>(clientOptions: Options<GetAllQuizQuestionsData, true>, queryKey?: TQueryKey, options?: Omit<UseSuspenseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useSuspenseQuery<TData, TError>({ queryKey: Common.UseGetAllQuizQuestionsKeyFn(clientOptions, queryKey), queryFn: ({ signal }) => getAllQuizQuestions({ ...clientOptions, signal, throwOnError: true }).then(response => response.data as TData) as TData, ...options });
