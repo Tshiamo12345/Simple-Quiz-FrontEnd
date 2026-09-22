@@ -23,11 +23,13 @@ function AuthPage({ initialMode = 'login' }: AuthPageProps) {
 
     const isSignUp = mode === 'signup';
 
-    const loginMutation = useLogin(undefined,{
-        onSuccess: () => {
-            // Spring Boot sets the JWT in an httpOnly cookie — nothing to store here.
-            login();
-            navigate('/dashboard');
+    const loginMutation = useLogin(undefined, {
+        onSuccess: async () => {
+            // Spring Boot sets the JWT in an httpOnly cookie.
+            // We must await login() so AuthContext fetches /me
+            // BEFORE we navigate, otherwise ProtectedRoute sees user=null.
+            await login();
+            navigate('/dashboard', { replace: true });
         },
         onError: (err: unknown) => {
             const status = (err as { response?: { status?: number } })?.response?.status;

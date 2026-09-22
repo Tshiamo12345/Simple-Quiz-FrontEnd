@@ -1,22 +1,27 @@
-import './App.css'
-import { Routes } from 'react-router-dom'
-import { Route } from 'react-router-dom'
-import Login from './pages/Login.tsx'
-import SignUp from './pages/SignUp.tsx'
-import QuizDashboard from './pages/QuizDashboard.tsx'
-import StatsQuiz from './pages/StatsQuiz.tsx'
-import QuizPage from './pages/QuizPage.tsx'
-function App() {
+import './App.css';
+import { Routes, Route } from 'react-router-dom';
+import Login from './pages/Login.tsx';
+import SignUp from './pages/SignUp.tsx';
+import QuizDashboard from './pages/QuizDashboard.tsx';
+import StatsQuiz from './pages/StatsQuiz.tsx';
+import QuizPage from './pages/QuizPage.tsx';
+import ProtectedRoute from './component/ProtectedRoute.tsx';
 
-  return (
-    <Routes>
-      <Route path='/' element={<Login />}/>
-      <Route path='/signup' element={<SignUp />}/>
-      <Route path='/dashboard' element={<QuizDashboard />}/>
-      <Route path='/stats' element={<StatsQuiz />}/>
-      <Route path="/quiz/:quizId" element={<QuizPage />} />
-    </Routes>
-  )
+function App() {
+    return (
+        <Routes>
+            {/* Public routes */}
+            <Route path="/" element={<Login />} />
+            <Route path="/signup" element={<SignUp />} />
+
+            {/* Protected routes */}
+            <Route element={<ProtectedRoute />}>
+                <Route path="/dashboard" element={<QuizDashboard />} />
+                <Route path="/stats" element={<StatsQuiz />} />
+                <Route path="/quiz/:quizId" element={<QuizPage />} />
+            </Route>
+        </Routes>
+    );
 }
 
-export default App
+export default App;
