@@ -158,3 +158,21 @@ export type GetAllQuizQuestionsResponses = {
 };
 
 export type GetAllQuizQuestionsResponse = GetAllQuizQuestionsResponses[keyof GetAllQuizQuestionsResponses];
+
+export type MeData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/auth/me';
+};
+
+export type MeResponses = {
+    /**
+     * OK
+     */
+    200: {
+        [key: string]: unknown;
+    };
+};
+
+export type MeResponse = MeResponses[keyof MeResponses];

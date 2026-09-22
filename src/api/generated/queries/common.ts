@@ -1,8 +1,8 @@
 // generated with @7nohe/openapi-react-query-codegen@3.0.2 
 
 import { type UseQueryResult } from "@tanstack/react-query";
-import { getAllQuizQuestions, getQuizzes, login, type Options, signup, submitAnswers, verifyOpt } from "../requests/sdk.gen";
-import type { GetAllQuizQuestionsData, GetQuizzesData } from "../requests/types.gen";
+import { getAllQuizQuestions, getQuizzes, login, me, type Options, signup, submitAnswers, verifyOpt } from "../requests/sdk.gen";
+import type { GetAllQuizQuestionsData, GetQuizzesData, MeData } from "../requests/types.gen";
 
 export type GetQuizzesDefaultResponse = Awaited<ReturnType<typeof getQuizzes>>["data"];
 export type GetQuizzesQueryResult<TData = GetQuizzesDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
@@ -15,6 +15,12 @@ export type GetAllQuizQuestionsQueryResult<TData = GetAllQuizQuestionsDefaultRes
 
 export const useGetAllQuizQuestionsKey = "GetAllQuizQuestions";
 export const UseGetAllQuizQuestionsKeyFn = (clientOptions: Options<GetAllQuizQuestionsData, true>, queryKey?: Array<unknown>) => [useGetAllQuizQuestionsKey, ...(queryKey ?? [clientOptions])];
+
+export type MeDefaultResponse = Awaited<ReturnType<typeof me>>["data"];
+export type MeQueryResult<TData = MeDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
+
+export const useMeKey = "Me";
+export const UseMeKeyFn = (clientOptions: Options<MeData, true> = {}, queryKey?: Array<unknown>) => [useMeKey, ...(queryKey ?? [clientOptions])];
 
 export type SubmitAnswersMutationResult = Awaited<ReturnType<typeof submitAnswers>>;
 

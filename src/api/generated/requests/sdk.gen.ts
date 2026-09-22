@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { GetAllQuizQuestionsData, GetAllQuizQuestionsResponses, GetQuizzesData, GetQuizzesResponses, LoginData, LoginResponses, SignupData, SignupResponses, SubmitAnswersData, SubmitAnswersResponses, VerifyOptData, VerifyOptResponses } from './types.gen';
+import type { GetAllQuizQuestionsData, GetAllQuizQuestionsResponses, GetQuizzesData, GetQuizzesResponses, LoginData, LoginResponses, MeData, MeResponses, SignupData, SignupResponses, SubmitAnswersData, SubmitAnswersResponses, VerifyOptData, VerifyOptResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -57,3 +57,5 @@ export const login = <ThrowOnError extends boolean = false>(options: Options<Log
 export const getQuizzes = <ThrowOnError extends boolean = false>(options?: Options<GetQuizzesData, ThrowOnError>): RequestResult<GetQuizzesResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetQuizzesResponses, unknown, ThrowOnError>({ url: '/api/quiz', ...options });
 
 export const getAllQuizQuestions = <ThrowOnError extends boolean = false>(options: Options<GetAllQuizQuestionsData, ThrowOnError>): RequestResult<GetAllQuizQuestionsResponses, unknown, ThrowOnError> => (options.client ?? client).get<GetAllQuizQuestionsResponses, unknown, ThrowOnError>({ url: '/api/quiz/start/{quizId}', ...options });
+
+export const me = <ThrowOnError extends boolean = false>(options?: Options<MeData, ThrowOnError>): RequestResult<MeResponses, unknown, ThrowOnError> => (options?.client ?? client).get<MeResponses, unknown, ThrowOnError>({ url: '/api/auth/me', ...options });
