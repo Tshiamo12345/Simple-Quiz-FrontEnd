@@ -1,39 +1,71 @@
-/* ---------- Design tokens ---------- */
+/* =====================================================
+   Design tokens
+   ===================================================== */
 :root {
-	/* brand (kept for topbar + content) */
-	--brand: #176b87;
-	--brand-dark: #104b5f;
-
-	/* purple ↔ green pair, matched in tone */
 	--purple: #5b3a8a;
 	--purple-deep: #3f2a6d;
 	--green: #2d6a4f;
 	--green-deep: #1f4a38;
 
-	/* neutrals */
 	--bg: #f4f7fb;
 	--surface: #ffffff;
 	--border: #e4eaf1;
 	--text: #1d2939;
 	--text-muted: #667085;
 
-	/* sidebar text */
 	--on-sidebar: #e9e3f2;
 	--on-sidebar-muted: #b8a9d4;
 }
 
-/* ---------- Shell ---------- */
-.dashboard-shell {
-	min-height: 100vh;
-	background: var(--bg);
-	color: var(--text);
+/* =====================================================
+   Global reset
+   ===================================================== */
+* {
+	box-sizing: border-box;
 }
 
+html,
+body,
+#root {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;   /* 👈 prevent body scrollbar */
+}
+
+body {
+	font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+	color: var(--text);
+	background: var(--bg);
+}
+
+/* =====================================================
+   Shell
+   ===================================================== */
+.dashboard-shell {
+	height: 100vh;
+	display: flex;
+	flex-direction: column;
+	background: var(--bg);
+	color: var(--text);
+	overflow: hidden;
+}
+
+/* =====================================================
+   Topbar
+   ===================================================== */
 .topbar {
 	min-height: 68px;
+	width: 100%;
+	flex-shrink: 0;      /* 👈 never collapse */
 	background: var(--surface);
 	border-bottom: 1px solid var(--border);
 	border-top: 3px solid var(--purple);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0 clamp(1rem, 3vw, 2rem);
 }
 
 .topbar-brand {
@@ -47,16 +79,23 @@
 	font-size: 0.9rem;
 }
 
+/* =====================================================
+   Body layout: sidebar + content
+   ===================================================== */
 .dashboard-body {
 	display: flex;
-	min-height: calc(100vh - 68px);
+	flex: 1;
+	width: 100%;
+	min-height: 0;
+	overflow: hidden;
 }
 
-/* ---------- Sidebar ---------- */
+/* =====================================================
+   Sidebar
+   ===================================================== */
 .sidebar {
 	width: 230px;
 	flex-shrink: 0;
-	/* purple → teal bridge → green, top to bottom */
 	background: linear-gradient(
 		180deg,
 		#5b3a8a 0%,
@@ -64,6 +103,10 @@
 		#2d6a4f 100%
 	);
 	color: var(--on-sidebar);
+	padding: 1rem;
+	overflow-y: auto;    /* 👈 sidebar scrolls internally if it ever overflows */
+	display: flex;
+	flex-direction: column;
 }
 
 .sidebar-label,
@@ -77,6 +120,7 @@
 }
 
 .sidebar-link {
+	display: block;
 	padding: 0.7rem 0.85rem;
 	border-radius: 0.35rem;
 	color: var(--on-sidebar);
@@ -85,7 +129,6 @@
 }
 
 .sidebar-link:hover {
-	/* neutral overlay so hover looks right on purple AND green */
 	background: rgba(255, 255, 255, 0.10);
 	color: #ffffff;
 }
@@ -96,7 +139,6 @@
 	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.10);
 }
 
-/* Logout button reset + divider */
 .sidebar-footer {
 	border-top: 1px solid rgba(255, 255, 255, 0.10);
 }
@@ -113,27 +155,49 @@
 	color: #ffffff;
 }
 
-/* ---------- Content ---------- */
+/* =====================================================
+   Content — only this scrolls
+   ===================================================== */
 .dashboard-content {
+	flex: 1;
+	min-width: 0;
 	width: 100%;
-	max-width: 1200px;
+	height: 100%;
 	padding: 2.5rem clamp(1.25rem, 4vw, 4rem);
+	overflow-y: auto;
 }
 
-/* ---------- Page heading (centered) ---------- */
+.dashboard-content > * {
+	width: 100%;
+	max-width: 1100px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+/* =====================================================
+   Page heading
+   ===================================================== */
 .page-heading {
-	margin-bottom: 2rem;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	text-align: center;
+	margin-bottom: 1.75rem;
+}
+
+.page-heading .eyebrow {
+	color: var(--purple);
+	margin-bottom: 0.35rem;
 }
 
 .page-heading h1 {
-	margin-bottom: 0.75rem;
+	margin: 0 0 0.85rem;
 	font-size: clamp(1.75rem, 3vw, 2.5rem);
+	font-weight: 700;
+	color: var(--text);
+	line-height: 1.15;
 }
 
-/* short green rule under the heading — ties heading to the sidebar's green */
 .heading-rule {
 	width: 64px;
 	height: 3px;
@@ -141,12 +205,45 @@
 	background: var(--green);
 }
 
-/* ---------- Generic cards ---------- */
-.summary-card,
-.stats-panel {
-	padding: 1.35rem;
+/* =====================================================
+   Toolbar / search
+   ===================================================== */
+.dashboard-toolbar {
+	display: flex;
+	justify-content: center;
+	margin-bottom: 2rem;
+}
+
+.search-input {
+	width: 100%;
+	max-width: 420px;
+	padding: 0.65rem 1rem;
 	border: 1px solid var(--border);
 	border-radius: 0.5rem;
+	background: var(--surface);
+	color: var(--text);
+	transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.search-input::placeholder {
+	color: var(--text-muted);
+}
+
+.search-input:focus {
+	border-color: var(--purple);
+	box-shadow: 0 0 0 3px rgba(91, 58, 138, 0.15);
+	outline: none;
+}
+
+/* =====================================================
+   Cards
+   ===================================================== */
+.summary-card,
+.stats-panel,
+.quiz-card {
+	padding: 1.35rem;
+	border: 1px solid var(--border);
+	border-radius: 0.6rem;
 	background: var(--surface);
 	box-shadow: 0 8px 24px rgba(16, 42, 67, 0.06);
 }
@@ -163,7 +260,7 @@
 }
 
 .summary-value {
-	color: var(--brand-dark);
+	color: var(--text);
 	font-size: 1.8rem;
 }
 
@@ -179,44 +276,19 @@
 	gap: 0.65rem;
 }
 
-/* ---------- Dashboard toolbar ---------- */
-.dashboard-toolbar {
-	display: flex;
-	justify-content: center;
-	margin-bottom: 2rem;
-}
-
-.search-input {
-	max-width: 420px;
-	border: 1px solid var(--border);
-	border-radius: 0.5rem;
-	padding: 0.65rem 1rem;
-	background: var(--surface);
-	transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-
-.search-input:focus {
-	border-color: var(--purple);
-	box-shadow: 0 0 0 3px rgba(91, 58, 138, 0.15);
-	outline: none;
-}
-
-/* ---------- Quiz cards ---------- */
+/* =====================================================
+   Quiz card
+   ===================================================== */
 .quiz-card {
 	display: flex;
 	flex-direction: column;
 	gap: 1rem;
-	padding: 1.35rem;
-	border: 1px solid var(--border);
-	border-radius: 0.6rem;
-	background: var(--surface);
-	box-shadow: 0 8px 24px rgba(16, 42, 67, 0.06);
 	transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
 .quiz-card:hover {
 	transform: translateY(-2px);
-	border-color: rgba(45, 106, 79, 0.35);   /* green hint on hover */
+	border-color: rgba(45, 106, 79, 0.35);
 	box-shadow: 0 12px 28px rgba(16, 42, 67, 0.10);
 }
 
@@ -226,7 +298,6 @@
 	gap: 0.6rem;
 }
 
-/* badge base */
 .quiz-card-badge {
 	align-self: flex-start;
 	padding: 0.2rem 0.6rem;
@@ -237,13 +308,11 @@
 	text-transform: uppercase;
 }
 
-/* green = done */
 .quiz-card-badge.is-completed {
 	background: rgba(45, 106, 79, 0.12);
 	color: var(--green);
 }
 
-/* purple = not started yet */
 .quiz-card-badge.is-pending {
 	background: rgba(91, 58, 138, 0.10);
 	color: var(--purple);
@@ -251,10 +320,15 @@
 
 .quiz-card-title {
 	margin: 0;
-	color: var(--text);
+	color: var(--purple);
 	font-size: 1.1rem;
 	font-weight: 700;
 	line-height: 1.3;
+	transition: color 0.15s ease;
+}
+
+.quiz-card:hover .quiz-card-title {
+	color: var(--purple-deep);
 }
 
 .quiz-card-meta {
@@ -282,7 +356,9 @@
 	font-weight: 600;
 }
 
-/* ---------- Buttons — brand variant ---------- */
+/* =====================================================
+   Buttons
+   ===================================================== */
 .btn-brand {
 	background: var(--purple);
 	border: 1px solid var(--purple);
@@ -306,7 +382,6 @@
 	color: rgba(255, 255, 255, 0.8);
 }
 
-/* ---------- Override bootstrap's primary inside the dashboard ---------- */
 .dashboard-shell .btn-primary {
 	background: var(--purple);
 	border-color: var(--purple);
@@ -322,10 +397,25 @@
 	color: var(--purple) !important;
 }
 
-/* ---------- Responsive ---------- */
+/* =====================================================
+   Responsive
+   ===================================================== */
 @media (max-width: 576px) {
 	.dashboard-body {
 		display: block;
+		overflow: visible;
+	}
+
+	.dashboard-shell {
+		height: auto;
+		min-height: 100vh;
+		overflow: visible;
+	}
+
+	html,
+	body,
+	#root {
+		overflow: auto;
 	}
 
 	.sidebar {
@@ -348,4 +438,118 @@
 	.stats-panel {
 		grid-template-columns: 1fr;
 	}
+
+	.dashboard-content {
+		height: auto;
+		overflow: visible;
+	}
+}
+
+/* =====================================================
+   Auth page
+   ===================================================== */
+.auth-page {
+	min-height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 2rem 1rem;
+	background: linear-gradient(
+		160deg,
+		#f4f7fb 0%,
+		#efe9f7 45%,
+		#e8f2ec 100%
+	);
+}
+
+.auth-card {
+	width: 100%;
+	max-width: 420px;
+	padding: 2rem;
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: 0.85rem;
+	box-shadow: 0 20px 50px rgba(16, 42, 67, 0.10);
+}
+
+.auth-header {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	margin-bottom: 1.75rem;
+}
+
+.auth-header .eyebrow {
+	color: var(--purple);
+	margin-bottom: 0.35rem;
+}
+
+.auth-header h1 {
+	margin: 0 0 0.85rem;
+	font-size: 1.75rem;
+	font-weight: 700;
+	color: var(--text);
+	line-height: 1.15;
+}
+
+.auth-input {
+	border: 1px solid var(--border);
+	border-radius: 0.5rem;
+	padding: 0.65rem 0.9rem;
+	background: var(--surface);
+	transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.auth-input:focus {
+	border-color: var(--purple);
+	box-shadow: 0 0 0 3px rgba(91, 58, 138, 0.15);
+	outline: none;
+}
+
+.auth-toggle {
+	display: block;
+	width: 100%;
+	margin-top: 1rem;
+	padding: 0.5rem;
+	background: none;
+	border: none;
+	color: var(--purple);
+	font-weight: 600;
+	font-size: 0.9rem;
+	cursor: pointer;
+	transition: color 0.15s ease;
+}
+
+.auth-toggle:hover {
+	color: var(--green);
+	text-decoration: underline;
+}
+
+/* =====================================================
+   Modal — force center
+   ===================================================== */
+.modal {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	display: flex !important;
+	align-items: center;
+	justify-content: center;
+	z-index: 1050;
+}
+
+.modal-dialog {
+	margin: 0 auto;
+	width: 100%;
+	max-width: 500px;
+}
+
+.modal-backdrop {
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.45);
+	z-index: 1040;
 }
