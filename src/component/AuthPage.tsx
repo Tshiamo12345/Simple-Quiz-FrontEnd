@@ -25,20 +25,24 @@ function AuthPage({ initialMode = 'login' }: AuthPageProps) {
 
     const loginMutation = useLogin(undefined, {
         onSuccess: async () => {
-            // Spring Boot sets the JWT in an httpOnly cookie.
-            // We must await login() so AuthContext fetches /me
-            // BEFORE we navigate, otherwise ProtectedRoute sees user=null.
             await login();
             navigate('/dashboard', { replace: true });
         },
         onError: (err: unknown) => {
-            const status = (err as { response?: { status?: number } })?.response?.status;
+            console.log('Login error:', err);
+
+            const anyErr = err as any;
+            const status: number | undefined =
+                anyErr?.response?.status ??
+                anyErr?.status ??
+                anyErr?.cause?.status ??
+                anyErr?.error?.status;
 
             if (status === 401) {
                 setError('Invalid username or password.');
             } else if (status === 403) {
                 setError('Your account is disabled.');
-            } else if (status) {
+            } else if (status !== undefined) {
                 setError('Something went wrong. Please try again.');
             } else {
                 setError('Unable to connect to the server.');
@@ -48,7 +52,6 @@ function AuthPage({ initialMode = 'login' }: AuthPageProps) {
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
-
         setFormData((currentForm) => ({
             ...currentForm,
             [name]: value
@@ -68,7 +71,6 @@ function AuthPage({ initialMode = 'login' }: AuthPageProps) {
         setError('');
 
         if (isSignUp) {
-            // TODO: replace with useSignup when ready
             console.log('Sign-up attempt:', formData);
             return;
         }
@@ -87,18 +89,20 @@ function AuthPage({ initialMode = 'login' }: AuthPageProps) {
     };
 
     return (
-        <main className="d-flex justify-content-center align-items-center vh-100">
-            <section className="card p-4 shadow" style={{ width: '400px', maxWidth: '90%' }}>
-                <h1 className="h2 text-center mb-4">
-                    {isSignUp ? 'Create an account' : 'Welcome back'}
-                </h1>
+        <main className="auth-page">
+            <section className="auth-card">
+                <header className="auth-header">
+                    <p className="eyebrow">{isSignUp ? 'Get started' : 'Welcome back'}</p>
+                    <h1>{isSignUp ? 'Create an account' : 'Sign in'}</h1>
+                    <div className="heading-rule" aria-hidden="true" />
+                </header>
 
                 <form onSubmit={handleSubmit}>
                     <div className="mb-3">
                         <label htmlFor="username" className="form-label">Username</label>
                         <input
                             id="username"
-                            className="form-control"
+                            className="form-control auth-input"
                             type="text"
                             name="username"
                             value={formData.username}
@@ -113,7 +117,7 @@ function AuthPage({ initialMode = 'login' }: AuthPageProps) {
                             <label htmlFor="email" className="form-label">Email</label>
                             <input
                                 id="email"
-                                className="form-control"
+                                className="form-control auth-input"
                                 type="email"
                                 name="email"
                                 value={formData.email}
@@ -128,7 +132,7 @@ function AuthPage({ initialMode = 'login' }: AuthPageProps) {
                         <label htmlFor="password" className="form-label">Password</label>
                         <input
                             id="password"
-                            className="form-control"
+                            className="form-control auth-input"
                             type="password"
                             name="password"
                             value={formData.password}
@@ -138,19 +142,29 @@ function AuthPage({ initialMode = 'login' }: AuthPageProps) {
                         />
                     </div>
 
-                    {error && <div className="alert alert-danger" role="alert">{error}</div>}
+                    {error && (
+                        <div className="alert alert-danger" role="alert">
+                            {error}
+                        </div>
+                    )}
 
                     <button
                         type="submit"
-                        className="btn btn-primary w-100"
+                        className="btn btn-brand w-100"
                         disabled={loginMutation.isPending}
                     >
-                        {loginMutation.isPending ? 'Signing in...' : isSignUp ? 'Sign Up' : 'Sign In'}
+                        {loginMutation.isPending
+                            ? 'Signing in...'
+                            : isSignUp
+                                ? 'Sign Up'
+                                : 'Sign In'}
                     </button>
                 </form>
 
-                <button type="button" className="btn btn-link w-100 mt-3" onClick={toggleMode}>
-                    {isSignUp ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
+                <button type="button" className="auth-toggle" onClick={toggleMode}>
+                    {isSignUp
+                        ? 'Already have an account? Sign in'
+                        : "Don't have an account? Sign up"}
                 </button>
             </section>
         </main>

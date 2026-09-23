@@ -22,16 +22,17 @@ function QuizDashboard() {
 
     return (
         <DashboardLayout>
-            <div className="page-heading d-flex justify-content-center">
-                <h3>Quiz Dashboard</h3>
-            </div>
-            <hr />
+            <header className="page-heading text-center">
+                <p className="eyebrow">Workspace</p>
+                <h1>Quiz Dashboard</h1>
+                <div className="heading-rule" aria-hidden="true" />
+            </header>
+
             {/* Search — filters by title only */}
-            <div className="mb-4 d-flex justify-content-center">
+            <div className="dashboard-toolbar">
                 <input
                     type="search"
-                    className="form-control"
-                    style={{ maxWidth: 400 }}
+                    className="form-control search-input"
                     placeholder="Search quizzes by title…"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
@@ -63,7 +64,7 @@ function QuizDashboard() {
             {/* Empty — search matched nothing */}
             {!isLoading && !isError && (quizzes?.length ?? 0) > 0 && filteredQuizzes.length === 0 && (
                 <div className="alert alert-warning">
-                    No quizzes match “{search}”.
+                    No quizzes match "{search}".
                 </div>
             )}
 
@@ -72,30 +73,43 @@ function QuizDashboard() {
                 <section className="row g-3" aria-label="Quiz overview">
                     {filteredQuizzes.map((quiz, index) => (
                         <div className="col-md-4" key={quiz.id ?? index}>
-                            <div className="summary-card h-100 d-flex flex-column">
-                                <span className="summary-label">TITLE: {quiz.title ?? '—'}</span>
-                                <span className="summary-label">
-                                    QUESTIONS: {quiz.numberOfQuestions ?? 0}
-                                </span>
-                                <span className="summary-label">AUTHOR: {quiz.author ?? '—'}</span>
-                                <span className="summary-label">
-                                    STATUS: {quiz.taken ? 'Completed' : 'Not started'}
-                                </span>
+                            <article className="quiz-card h-100 d-flex flex-column">
+                                <div className="quiz-card-header">
+                                    <span
+                                        className={`quiz-card-badge ${
+                                            quiz.taken ? 'is-completed' : 'is-pending'
+                                        }`}
+                                    >
+                                        {quiz.taken ? 'Completed' : 'Not started'}
+                                    </span>
+                                    <h3 className="quiz-card-title">{quiz.title ?? '—'}</h3>
+                                </div>
+
+                                <ul className="quiz-card-meta">
+                                    <li>
+                                        <span className="meta-label">Questions</span>
+                                        <span className="meta-value">{quiz.numberOfQuestions ?? 0}</span>
+                                    </li>
+                                    <li>
+                                        <span className="meta-label">Author</span>
+                                        <span className="meta-value">{quiz.author ?? '—'}</span>
+                                    </li>
+                                </ul>
 
                                 <button
                                     type="button"
-                                    className="btn btn-primary mt-auto"
+                                    className="btn btn-brand mt-auto w-100"
                                     onClick={() => setSelectedQuiz(quiz)}
                                 >
                                     View
                                 </button>
-                            </div>
+                            </article>
                         </div>
                     ))}
                 </section>
             )}
 
-            {/* Modal — unchanged */}
+            {/* Modal */}
             {selectedQuiz &&
                 createPortal(
                     <>
@@ -147,11 +161,11 @@ function QuizDashboard() {
                                         </button>
                                         <button
                                             type="button"
-                                            className="btn btn-primary"
+                                            className="btn btn-brand"
                                             disabled={!selectedQuiz.id}
                                             onClick={() => {
                                                 if (!selectedQuiz.id) return;
-                                                setSelectedQuiz(null);          // close modal first
+                                                setSelectedQuiz(null);
                                                 navigate(`/quiz/${selectedQuiz.id}`);
                                             }}
                                         >

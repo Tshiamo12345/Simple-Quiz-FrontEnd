@@ -29,7 +29,7 @@ function SideBar() {
                 </NavLink>
             </nav>
 
-            <div className="mt-auto pt-3">
+            <div className="mt-auto pt-3 sidebar-footer">
                 <button
                     type="button"
                     onClick={handleLogout}
