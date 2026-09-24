@@ -6,7 +6,7 @@ import QuizDashboard from './pages/QuizDashboard.tsx';
 import StatsQuiz from './pages/StatsQuiz.tsx';
 import QuizPage from './pages/QuizPage.tsx';
 import ProtectedRoute from './component/ProtectedRoute.tsx';
-
+import QuizResultPage from './pages/QuizResultPage.tsx';
 function App() {
     return (
         <Routes>
@@ -19,6 +19,7 @@ function App() {
                 <Route path="/dashboard" element={<QuizDashboard />} />
                 <Route path="/stats" element={<StatsQuiz />} />
                 <Route path="/quiz/:quizId" element={<QuizPage />} />
+                <Route path="/quiz/:quizId/result" element={<QuizResultPage />} />
             </Route>
         </Routes>
     );

@@ -1,7 +1,11 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import DashboardLayout from '../component/DashboardLayout';
-import { useGetAllQuizQuestions } from '../api/generated/queries';
+import {
+    useGetAllQuizQuestions,
+    useSubmitAnswers,
+} from '../api/generated/queries';
+import type { QuizResultResponse } from '../api/generated/requests/types.gen';
 
 type Answers = Record<string, string>;
 
@@ -10,13 +14,35 @@ function QuizPage() {
     const navigate = useNavigate();
 
     const [answers, setAnswers] = useState<Answers>({});
-    const [submitted, setSubmitted] = useState(false);
+    const [submitError, setSubmitError] = useState('');
 
-    const { data: questions, isLoading, isError, error } = useGetAllQuizQuestions(
+    const {
+        data: questions,
+        isLoading,
+        isError,
+        error,
+    } = useGetAllQuizQuestions(
         { path: { quizId: quizId! } },
         undefined,
         { enabled: !!quizId }
     );
+
+    const submitMutation = useSubmitAnswers([], {
+        onSuccess: (raw) => {
+            // hey-api returns { data, error, response, request }
+            const body = (raw as unknown as { data?: QuizResultResponse })?.data ?? null;
+
+            // navigate to the dedicated result page, passing the grade along
+            navigate(`/quiz/${quizId}/result`, {
+                state: { result: body, questions },
+                replace: true,
+            });
+        },
+        onError: (err) => {
+            console.error('Submit failed:', err);
+            setSubmitError('Failed to submit answers. Please try again.');
+        },
+    });
 
     if (!quizId) {
         return (
@@ -61,8 +87,18 @@ function QuizPage() {
     };
 
     const handleSubmit = () => {
-        setSubmitted(true);
-        console.log('Answers:', answers);
+        if (!quizId) return;
+        setSubmitError('');
+
+        submitMutation.mutate({
+            path: { quizId },
+            body: {
+                answers: Object.entries(answers).map(([questionId, chosenAnswer]) => ({
+                    questionId,
+                    chosenAnswer,
+                })),
+            },
+        });
     };
 
     return (
@@ -100,43 +136,52 @@ function QuizPage() {
                             </p>
 
                             <div className="quiz-options">
-                                {options.map((opt) => (
-                                    <label
-                                        key={opt.key}
-                                        htmlFor={`${qid}-${opt.key}`}
-                                        className={`quiz-option ${
-                                            answers[qid] === opt.label ? 'is-selected' : ''
-                                        }`}
-                                    >
-                                        <input
-                                            className="form-check-input"
-                                            type="radio"
-                                            name={qid}
-                                            id={`${qid}-${opt.key}`}
-                                            value={opt.label}
-                                            checked={answers[qid] === opt.label}
-                                            onChange={() => handleSelect(qid, opt.label!)}
-                                            disabled={submitted}
-                                        />
-                                        <span className="quiz-option-label">
-                                            <strong>{opt.key}.</strong> {opt.label}
-                                        </span>
-                                    </label>
-                                ))}
+                                {options.map((opt) => {
+                                    const isChosen = answers[qid] === opt.label;
+                                    const classes = ['quiz-option'];
+                                    if (isChosen) classes.push('is-selected');
+
+                                    return (
+                                        <label
+                                            key={opt.key}
+                                            htmlFor={`${qid}-${opt.key}`}
+                                            className={classes.join(' ')}
+                                        >
+                                            <input
+                                                className="form-check-input"
+                                                type="radio"
+                                                name={qid}
+                                                id={`${qid}-${opt.key}`}
+                                                value={opt.label}
+                                                checked={isChosen}
+                                                onChange={() => handleSelect(qid, opt.label!)}
+                                            />
+                                            <span className="quiz-option-label">
+                                                <strong>{opt.key}.</strong> {opt.label}
+                                            </span>
+                                        </label>
+                                    );
+                                })}
                             </div>
                         </li>
                     );
                 })}
             </ol>
 
+            {submitError && (
+                <p className="quiz-submit-error" role="alert">
+                    {submitError}
+                </p>
+            )}
+
             <div className="quiz-submit-row">
                 <button
                     type="button"
                     className="btn btn-brand"
-                    disabled={!allAnswered || submitted}
+                    disabled={!allAnswered || submitMutation.isPending}
                     onClick={handleSubmit}
                 >
-                    {submitted ? 'Submitted' : 'Submit Answers'}
+                    {submitMutation.isPending ? 'Submitting…' : 'Submit Answers'}
                 </button>
             </div>
         </DashboardLayout>
