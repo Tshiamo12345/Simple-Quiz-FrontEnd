@@ -6,18 +6,15 @@ import { logout as logoutApi } from '../api/generated/requests/sdk.gen';
 
 function SideBar() {
     const { logout } = useAuth();
-    const { isAdmin, isTeacher } = useRole();
+    const { isAdmin } = useRole();
     const navigate = useNavigate();
     const [showConfirm, setShowConfirm] = useState(false);
     const [isLoggingOut, setIsLoggingOut] = useState(false);
     const [error, setError] = useState('');
 
-    const canManage = isAdmin || isTeacher;
-
     const confirmLogout = async () => {
         setIsLoggingOut(true);
         setError('');
-
         try {
             await logoutApi();
             await logout();
@@ -31,42 +28,38 @@ function SideBar() {
         }
     };
 
+    const linkClass = ({ isActive }: { isActive: boolean }) =>
+        `sidebar-link ${isActive ? 'active' : ''}`;
+
     return (
         <>
             <aside className="sidebar p-3 d-flex flex-column">
-                <p className="sidebar-label">Workspace</p>
+                <p className="sidebar-label">
+                    {isAdmin ? 'Administration' : 'Workspace'}
+                </p>
 
                 <nav className="nav flex-column gap-2" aria-label="Main navigation">
-                    <NavLink
-                        to="/dashboard"
-                        className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
-                    >
-                        Quiz Dashboard
-                    </NavLink>
-
-                    <NavLink
-                        to="/stats"
-                        className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
-                    >
-                        Quiz Stats
-                    </NavLink>
-
-                    {canManage && (
-                        <NavLink
-                            to="/manage/quizzes"
-                            className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
-                        >
-                            Manage Quizzes
-                        </NavLink>
-                    )}
-
-                    {isAdmin && (
-                        <NavLink
-                            to="/admin/users"
-                            className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
-                        >
-                            Manage Users
-                        </NavLink>
+                    {isAdmin ? (
+                        <>
+                            <NavLink to="/admin" className={linkClass} end>
+                                Admin Dashboard
+                            </NavLink>
+                            <NavLink to="/admin/users" className={linkClass}>
+                                Manage Users
+                            </NavLink>
+                            <NavLink to="/admin/quizzes" className={linkClass}>
+                                Manage Quizzes
+                            </NavLink>
+                        </>
+                    ) : (
+                        <>
+                            <NavLink to="/dashboard" className={linkClass}>
+                                Quiz Dashboard
+                            </NavLink>
+                            <NavLink to="/stats" className={linkClass}>
+                                Quiz Stats
+                            </NavLink>
+                        </>
                     )}
                 </nav>
 
@@ -82,6 +75,7 @@ function SideBar() {
             </aside>
 
             {showConfirm && (
+                /* ...same modal as before... */
                 <div
                     className="modal fade show d-block"
                     tabIndex={-1}
