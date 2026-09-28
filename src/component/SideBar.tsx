@@ -1,27 +1,26 @@
 import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useRole } from '../context/useRole';
 import { logout as logoutApi } from '../api/generated/requests/sdk.gen';
 
 function SideBar() {
     const { logout } = useAuth();
+    const { isAdmin, isTeacher } = useRole();
     const navigate = useNavigate();
     const [showConfirm, setShowConfirm] = useState(false);
     const [isLoggingOut, setIsLoggingOut] = useState(false);
     const [error, setError] = useState('');
+
+    const canManage = isAdmin || isTeacher;
 
     const confirmLogout = async () => {
         setIsLoggingOut(true);
         setError('');
 
         try {
-            // 1. Tell the server to clear the jwt cookie
             await logoutApi();
-
-            // 2. Clear client-side auth state (user, isAuthenticated, etc.)
             await logout();
-
-            // 3. Send them home
             navigate('/', { replace: true });
         } catch (err) {
             console.error('Logout failed:', err);
@@ -44,12 +43,31 @@ function SideBar() {
                     >
                         Quiz Dashboard
                     </NavLink>
+
                     <NavLink
                         to="/stats"
                         className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
                     >
                         Quiz Stats
                     </NavLink>
+
+                    {canManage && (
+                        <NavLink
+                            to="/manage/quizzes"
+                            className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+                        >
+                            Manage Quizzes
+                        </NavLink>
+                    )}
+
+                    {isAdmin && (
+                        <NavLink
+                            to="/admin/users"
+                            className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+                        >
+                            Manage Users
+                        </NavLink>
+                    )}
                 </nav>
 
                 <div className="mt-auto pt-3 sidebar-footer">

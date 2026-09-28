@@ -190,3 +190,19 @@ export type MeResponses = {
 };
 
 export type MeResponse = MeResponses[keyof MeResponses];
+
+export type DeleteQuizData = {
+    body?: never;
+    path: {
+        quizId: string;
+    };
+    query?: never;
+    url: '/api/quiz/{quizId}';
+};
+
+export type DeleteQuizResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};

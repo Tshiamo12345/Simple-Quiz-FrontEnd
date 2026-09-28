@@ -1,15 +1,12 @@
 import { Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext'; // adjust path
+import { useAuth } from '../context/AuthContext';
+import { useRole } from '../context/useRole';
 
 function TopBar() {
     const { user, loading } = useAuth();
+    const { role } = useRole();
 
-    // Try a few common shapes the API might return the name in.
-    // Remove the ones that don't apply once you know your API shape.
-    const displayName =
-        (user as any)?.name ??
-        (user as any)?.username ??
-        null;
+    const displayName = user?.username ?? user?.email ?? null;
 
     return (
         <header className="topbar px-3 px-lg-4 d-flex align-items-center justify-content-between">
@@ -17,12 +14,19 @@ function TopBar() {
                 SimpleQuiz
             </Link>
 
-            <span className="topbar-user">
-                {loading
-                    ? 'Loading…'
-                    : displayName
-                        ? `Hi, ${displayName}`
-                        : 'Quiz workspace'}
+            <span className="topbar-user d-flex align-items-center gap-2">
+                {loading ? (
+                    'Loading…'
+                ) : displayName ? (
+                    <>
+                        <span>Hi, {displayName}</span>
+                        {role && (
+                            <span className="badge text-bg-secondary">{role}</span>
+                        )}
+                    </>
+                ) : (
+                    'Quiz workspace'
+                )}
             </span>
         </header>
     );

@@ -2,14 +2,16 @@ import { createContext, useContext } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useMe } from '../api/generated/queries';
 
-
-import type { MeDefaultResponse } from '../api/generated/queries/common';
-//         ^^^ adjust the path + type name to whatever your generated common.ts exports
-
-type User = MeDefaultResponse | Record<string, unknown>;
+// Shape of GET /api/auth/me
+export type AuthUser = {
+    userId: string;
+    username: string;
+    email: string;
+    role: string; // "USER" | "ADMIN" | ...
+};
 
 type AuthContextValue = {
-    user: User | null;
+    user: AuthUser | null;
     loading: boolean;
     login: () => Promise<void>;
     logout: () => Promise<void>;
@@ -21,17 +23,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const queryClient = useQueryClient();
 
     const { data, isLoading, refetch } = useMe(
-        {},     // clientOptions
-        undefined, // queryKey suffix (optional)
+        {},
+        undefined,
         {
-            // 401 is expected when not logged in — don't retry it
             retry: false,
             refetchOnWindowFocus: false,
-            staleTime: 5 * 60 * 1000, // 5 min
+            staleTime: 5 * 60 * 1000,
         }
     );
 
-    // Called by AuthPage's onSuccess, after login sets the cookie
     const login = async () => {
         await refetch();
     };
@@ -43,7 +43,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 credentials: 'include',
             });
         } finally {
-            // Wipe all cached queries so nothing stale sticks around
             queryClient.clear();
         }
     };
@@ -51,7 +50,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return (
         <AuthContext.Provider
             value={{
-                user: (data as User) ?? null,
+                user: (data as AuthUser | undefined) ?? null,
                 loading: isLoading,
                 login,
                 logout,
