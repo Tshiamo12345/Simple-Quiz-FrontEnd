@@ -11,7 +11,7 @@ export type Role = (typeof ROLES)[keyof typeof ROLES];
 export function useRole() {
     const { user } = useAuth();
     const role = user?.role ?? null;
-
+    console.log("role "+role);
     return {
         role,
         isAdmin: role === ROLES.ADMIN,

@@ -2,18 +2,27 @@ import { createContext, useContext } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useMe } from '../api/generated/queries';
 
-// Shape of GET /api/auth/me
 export type AuthUser = {
     userId: string;
     username: string;
     email: string;
-    role: string; // "USER" | "ADMIN" | ...
+    role: string; // normalized to UPPERCASE
+};
+
+const normalizeUser = (raw: any): AuthUser | null => {
+    if (!raw) return null;
+    return {
+        userId: raw.userId ?? '',
+        username: raw.username ?? '',
+        email: raw.email ?? '',
+        role: (raw.role ?? '').toUpperCase(),
+    };
 };
 
 type AuthContextValue = {
     user: AuthUser | null;
     loading: boolean;
-    login: () => Promise<void>;
+    login: () => Promise<AuthUser | null>;   // <-- returns the fresh user
     logout: () => Promise<void>;
 };
 
@@ -32,8 +41,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     );
 
-    const login = async () => {
-        await refetch();
+    const login = async (): Promise<AuthUser | null> => {
+        const result = await refetch();
+        return normalizeUser(result.data);
     };
 
     const logout = async () => {
@@ -50,7 +60,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return (
         <AuthContext.Provider
             value={{
-                user: (data as AuthUser | undefined) ?? null,
+                user: normalizeUser(data),
                 loading: isLoading,
                 login,
                 logout,

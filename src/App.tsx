@@ -8,6 +8,7 @@ import QuizPage from './pages/QuizPage.tsx';
 import QuizResultPage from './pages/QuizResultPage.tsx';
 import ProtectedRoute from './component/ProtectedRoute.tsx';
 import RequireRole from './component/RequireRole.tsx';
+import AdminDashBoard from './pages/AdminDashBoard.tsx';
 
 function App() {
   return (
@@ -18,7 +19,7 @@ function App() {
 
       {/* Logged-in routes */}
       <Route element={<ProtectedRoute />}>
-        <Route element={<RequireRole allow={['user']} />}>
+        <Route element={<RequireRole allow={['USER']} />}>
 
 
           <Route path="/dashboard" element={<QuizDashboard />} />
@@ -26,8 +27,10 @@ function App() {
           <Route path="/quiz/:quizId" element={<QuizPage />} />
           <Route path="/quiz/:quizId/result" element={<QuizResultPage />} />
         </Route>
-        
-        
+
+        <Route element={<RequireRole allow={['ADMIN']} redirectTo="/admin" />}>
+          <Route path="/admin" element={<AdminDashBoard />} />
+        </Route>
       </Route>
     </Routes>
   );
