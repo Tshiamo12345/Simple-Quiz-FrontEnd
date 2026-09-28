@@ -1,7 +1,7 @@
 // generated with @7nohe/openapi-react-query-codegen@3.0.2 
 
 import { type UseQueryResult } from "@tanstack/react-query";
-import { getAllQuizQuestions, getQuizzes, login, me, type Options, signup, submitAnswers, verifyOpt } from "../requests/sdk.gen";
+import { getAllQuizQuestions, getQuizzes, login, logout, me, type Options, signup, submitAnswers, verifyOpt } from "../requests/sdk.gen";
 import type { GetAllQuizQuestionsData, GetQuizzesData, MeData } from "../requests/types.gen";
 
 export type GetQuizzesDefaultResponse = Awaited<ReturnType<typeof getQuizzes>>["data"];
@@ -36,6 +36,11 @@ export type SignupMutationResult = Awaited<ReturnType<typeof signup>>;
 
 export const useSignupKey = "Signup";
 export const UseSignupKeyFn = (mutationKey?: Array<unknown>) => [useSignupKey, ...(mutationKey ?? [])];
+
+export type LogoutMutationResult = Awaited<ReturnType<typeof logout>>;
+
+export const useLogoutKey = "Logout";
+export const UseLogoutKeyFn = (mutationKey?: Array<unknown>) => [useLogoutKey, ...(mutationKey ?? [])];
 
 export type LoginMutationResult = Awaited<ReturnType<typeof login>>;
 

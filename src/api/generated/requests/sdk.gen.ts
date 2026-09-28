@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { GetAllQuizQuestionsData, GetAllQuizQuestionsResponses, GetQuizzesData, GetQuizzesResponses, LoginData, LoginResponses, MeData, MeResponses, SignupData, SignupResponses, SubmitAnswersData, SubmitAnswersResponses, VerifyOptData, VerifyOptResponses } from './types.gen';
+import type { GetAllQuizQuestionsData, GetAllQuizQuestionsResponses, GetQuizzesData, GetQuizzesResponses, LoginData, LoginResponses, LogoutData, LogoutResponses, MeData, MeResponses, SignupData, SignupResponses, SubmitAnswersData, SubmitAnswersResponses, VerifyOptData, VerifyOptResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -44,6 +44,8 @@ export const signup = <ThrowOnError extends boolean = false>(options: Options<Si
         ...options.headers
     }
 });
+
+export const logout = <ThrowOnError extends boolean = false>(options?: Options<LogoutData, ThrowOnError>): RequestResult<LogoutResponses, unknown, ThrowOnError> => (options?.client ?? client).post<LogoutResponses, unknown, ThrowOnError>({ url: '/api/auth/logout', ...options });
 
 export const login = <ThrowOnError extends boolean = false>(options: Options<LoginData, ThrowOnError>): RequestResult<LoginResponses, unknown, ThrowOnError> => (options.client ?? client).post<LoginResponses, unknown, ThrowOnError>({
     url: '/api/auth/login',

@@ -107,6 +107,20 @@ export type SignupResponses = {
     200: unknown;
 };
 
+export type LogoutData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/auth/logout';
+};
+
+export type LogoutResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
 export type LoginData = {
     body: LoginRequest;
     path?: never;
