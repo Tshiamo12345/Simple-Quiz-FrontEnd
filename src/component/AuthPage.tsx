@@ -262,7 +262,23 @@ function AuthPage({ initialMode = 'login' }: AuthPageProps) {
                 </header>
 
                 {isVerifying ? (
-                    <form onSubmit={handleVerifySubmit}>
+                    <form onSubmit={handleVerifySubmit} autoComplete="off">
+                        {/* Decoy inputs to absorb browser autofill */}
+                        <input
+                            type="text"
+                            name="fake-username"
+                            style={{ display: 'none' }}
+                            tabIndex={-1}
+                            autoComplete="username"
+                        />
+                        <input
+                            type="password"
+                            name="fake-password"
+                            style={{ display: 'none' }}
+                            tabIndex={-1}
+                            autoComplete="current-password"
+                        />
+
                         <p className="auth-hint">
                             We sent a {OTP_LENGTH}-digit code to <strong>{pendingEmail}</strong>.
                             Enter it below to activate your account.
@@ -279,7 +295,7 @@ function AuthPage({ initialMode = 'login' }: AuthPageProps) {
                                 onChange={handleOtpChange}
                                 placeholder="Enter the 6-digit code"
                                 inputMode="numeric"
-                                autoComplete="one-time-code"
+                                autoComplete="off"
                                 maxLength={OTP_LENGTH}
                                 autoFocus
                                 required
@@ -312,7 +328,23 @@ function AuthPage({ initialMode = 'login' }: AuthPageProps) {
                     </form>
                 ) : (
                     <>
-                        <form onSubmit={handleSubmit}>
+                        <form onSubmit={handleSubmit} autoComplete="off">
+                            {/* Decoy inputs to absorb browser autofill */}
+                            <input
+                                type="text"
+                                name="fake-username"
+                                style={{ display: 'none' }}
+                                tabIndex={-1}
+                                autoComplete="username"
+                            />
+                            <input
+                                type="password"
+                                name="fake-password"
+                                style={{ display: 'none' }}
+                                tabIndex={-1}
+                                autoComplete="current-password"
+                            />
+
                             <div className="mb-3">
                                 <label htmlFor="username" className="form-label">Username</label>
                                 <input
@@ -323,7 +355,7 @@ function AuthPage({ initialMode = 'login' }: AuthPageProps) {
                                     value={formData.username}
                                     onChange={handleChange}
                                     placeholder="Enter your username"
-                                    autoComplete="username"
+                                    autoComplete="off"
                                     required
                                 />
                             </div>
@@ -339,7 +371,7 @@ function AuthPage({ initialMode = 'login' }: AuthPageProps) {
                                         value={formData.email}
                                         onChange={handleChange}
                                         placeholder="Enter your email"
-                                        autoComplete="email"
+                                        autoComplete="off"
                                         required
                                     />
                                 </div>
@@ -355,7 +387,7 @@ function AuthPage({ initialMode = 'login' }: AuthPageProps) {
                                     value={formData.password}
                                     onChange={handleChange}
                                     placeholder="Enter your password"
-                                    autoComplete={isSignUp ? 'new-password' : 'current-password'}
+                                    autoComplete="new-password"
                                     required
                                 />
                             </div>
