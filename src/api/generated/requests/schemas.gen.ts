@@ -137,6 +137,9 @@ export const QuizRequestSchema = {
         description: {
             type: 'string'
         },
+        language: {
+            type: 'string'
+        },
         taken: {
             type: 'boolean'
         }
@@ -159,6 +162,32 @@ export const QuizQuestionsRequestSchema = {
             type: 'string'
         },
         questionText: {
+            type: 'string'
+        }
+    }
+} as const;
+
+export const AdminQuizRequestDTOSchema = {
+    type: 'object',
+    properties: {
+        id: {
+            type: 'string'
+        },
+        quizName: {
+            type: 'string'
+        },
+        language: {
+            type: 'string'
+        },
+        numberOfQuestions: {
+            type: 'integer',
+            format: 'int32'
+        },
+        numberOfAttempts: {
+            type: 'integer',
+            format: 'int32'
+        },
+        status: {
             type: 'string'
         }
     }

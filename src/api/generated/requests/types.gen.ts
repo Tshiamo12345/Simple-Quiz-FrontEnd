@@ -50,6 +50,7 @@ export type QuizRequest = {
     numberOfQuestions?: number;
     author?: string;
     description?: string;
+    language?: string;
     taken?: boolean;
 };
 
@@ -59,6 +60,15 @@ export type QuizQuestionsRequest = {
     optionB?: string;
     optionC?: string;
     questionText?: string;
+};
+
+export type AdminQuizRequestDto = {
+    id?: string;
+    quizName?: string;
+    language?: string;
+    numberOfQuestions?: number;
+    numberOfAttempts?: number;
+    status?: string;
 };
 
 export type SubmitAnswersData = {
@@ -172,6 +182,22 @@ export type GetAllQuizQuestionsResponses = {
 };
 
 export type GetAllQuizQuestionsResponse = GetAllQuizQuestionsResponses[keyof GetAllQuizQuestionsResponses];
+
+export type GetAllQuizAdminData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/quiz/admin/quizzes';
+};
+
+export type GetAllQuizAdminResponses = {
+    /**
+     * OK
+     */
+    200: Array<AdminQuizRequestDto>;
+};
+
+export type GetAllQuizAdminResponse = GetAllQuizAdminResponses[keyof GetAllQuizAdminResponses];
 
 export type MeData = {
     body?: never;

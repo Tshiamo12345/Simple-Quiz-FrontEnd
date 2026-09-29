@@ -76,9 +76,8 @@ function QuizDashboard() {
                             <article className="quiz-card h-100 d-flex flex-column">
                                 <div className="quiz-card-header">
                                     <span
-                                        className={`quiz-card-badge ${
-                                            quiz.taken ? 'is-completed' : 'is-pending'
-                                        }`}
+                                        className={`quiz-card-badge ${quiz.taken ? 'is-completed' : 'is-pending'
+                                            }`}
                                     >
                                         {quiz.taken ? 'Completed' : 'Not started'}
                                     </span>
@@ -138,6 +137,9 @@ function QuizDashboard() {
                                     <div className="modal-body">
                                         <p className="mb-2">
                                             <strong>Author:</strong> {selectedQuiz.author ?? '—'}
+                                        </p>
+                                        <p className="mb-2">
+                                            <strong>Language:</strong> {selectedQuiz.language ?? '—'}
                                         </p>
                                         <p className="mb-2">
                                             <strong>Questions:</strong> {selectedQuiz.numberOfQuestions ?? 0}
