@@ -1,7 +1,7 @@
 // generated with @7nohe/openapi-react-query-codegen@3.0.2 
 
 import { type UseQueryResult } from "@tanstack/react-query";
-import { deleteQuiz, getAllQuizAdmin, getAllQuizQuestions, getQuizzes, login, logout, me, type Options, signup, submitAnswers, verifyOpt } from "../requests/sdk.gen";
+import { createQuiz, deleteQuiz, getAllQuizAdmin, getAllQuizQuestions, getQuizzes, login, logout, me, signup, submitAnswers, verifyOpt, type Options } from "../requests/sdk.gen";
 import type { GetAllQuizAdminData, GetAllQuizQuestionsData, GetQuizzesData, MeData } from "../requests/types.gen";
 
 export type GetQuizzesDefaultResponse = Awaited<ReturnType<typeof getQuizzes>>["data"];
@@ -27,6 +27,11 @@ export type MeQueryResult<TData = MeDefaultResponse, TError = unknown> = UseQuer
 
 export const useMeKey = "Me";
 export const UseMeKeyFn = (clientOptions: Options<MeData, true> = {}, queryKey?: Array<unknown>) => [useMeKey, ...(queryKey ?? [clientOptions])];
+
+export type CreateQuizMutationResult = Awaited<ReturnType<typeof createQuiz>>;
+
+export const useCreateQuizKey = "CreateQuiz";
+export const UseCreateQuizKeyFn = (mutationKey?: Array<unknown>) => [useCreateQuizKey, ...(mutationKey ?? [])];
 
 export type SubmitAnswersMutationResult = Awaited<ReturnType<typeof submitAnswers>>;
 

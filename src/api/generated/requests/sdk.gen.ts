@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { DeleteQuizData, DeleteQuizResponses, GetAllQuizAdminData, GetAllQuizAdminResponses, GetAllQuizQuestionsData, GetAllQuizQuestionsResponses, GetQuizzesData, GetQuizzesResponses, LoginData, LoginResponses, LogoutData, LogoutResponses, MeData, MeResponses, SignupData, SignupResponses, SubmitAnswersData, SubmitAnswersResponses, VerifyOptData, VerifyOptResponses } from './types.gen';
+import type { CreateQuizData, CreateQuizResponses, DeleteQuizData, DeleteQuizResponses, GetAllQuizAdminData, GetAllQuizAdminResponses, GetAllQuizQuestionsData, GetAllQuizQuestionsResponses, GetQuizzesData, GetQuizzesResponses, LoginData, LoginResponses, LogoutData, LogoutResponses, MeData, MeResponses, SignupData, SignupResponses, SubmitAnswersData, SubmitAnswersResponses, VerifyOptData, VerifyOptResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -17,6 +17,17 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
      */
     meta?: keyof ClientMeta extends never ? Record<string, unknown> : ClientMeta;
 };
+
+export const getQuizzes = <ThrowOnError extends boolean = false>(options?: Options<GetQuizzesData, ThrowOnError>): RequestResult<GetQuizzesResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetQuizzesResponses, unknown, ThrowOnError>({ url: '/api/quiz', ...options });
+
+export const createQuiz = <ThrowOnError extends boolean = false>(options: Options<CreateQuizData, ThrowOnError>): RequestResult<CreateQuizResponses, unknown, ThrowOnError> => (options.client ?? client).post<CreateQuizResponses, unknown, ThrowOnError>({
+    url: '/api/quiz',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
 
 export const submitAnswers = <ThrowOnError extends boolean = false>(options: Options<SubmitAnswersData, ThrowOnError>): RequestResult<SubmitAnswersResponses, unknown, ThrowOnError> => (options.client ?? client).post<SubmitAnswersResponses, unknown, ThrowOnError>({
     url: '/api/quiz/{quizId}/submit',
@@ -55,8 +66,6 @@ export const login = <ThrowOnError extends boolean = false>(options: Options<Log
         ...options.headers
     }
 });
-
-export const getQuizzes = <ThrowOnError extends boolean = false>(options?: Options<GetQuizzesData, ThrowOnError>): RequestResult<GetQuizzesResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetQuizzesResponses, unknown, ThrowOnError>({ url: '/api/quiz', ...options });
 
 export const getAllQuizQuestions = <ThrowOnError extends boolean = false>(options: Options<GetAllQuizQuestionsData, ThrowOnError>): RequestResult<GetAllQuizQuestionsResponses, unknown, ThrowOnError> => (options.client ?? client).get<GetAllQuizQuestionsResponses, unknown, ThrowOnError>({ url: '/api/quiz/start/{quizId}', ...options });
 

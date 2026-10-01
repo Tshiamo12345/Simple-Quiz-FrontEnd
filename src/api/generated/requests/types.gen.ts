@@ -4,6 +4,39 @@ export type ClientOptions = {
     baseUrl: 'http://localhost:8080' | (string & {});
 };
 
+export type CreateQuestionRequestDto = {
+    questionText: string;
+    optionA: string;
+    optionB: string;
+    optionC: string;
+    correctAnswer: string;
+};
+
+export type CreateQuizRequestDto = {
+    title: string;
+    language: string;
+    description: string;
+    questions: Array<CreateQuestionRequestDto>;
+};
+
+export type QuestionResponse = {
+    questionId?: string;
+    questionText?: string;
+    optionA?: string;
+    optionB?: string;
+    optionC?: string;
+};
+
+export type QuizResponse = {
+    id?: string;
+    title?: string;
+    language?: string;
+    description?: string;
+    authorUsername?: string;
+    numberOfQuestions?: number;
+    questions?: Array<QuestionResponse>;
+};
+
 export type AnswerRequestDto = {
     chosenAnswer: string;
     questionId: string;
@@ -70,6 +103,38 @@ export type AdminQuizRequestDto = {
     numberOfAttempts?: number;
     status?: string;
 };
+
+export type GetQuizzesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/quiz';
+};
+
+export type GetQuizzesResponses = {
+    /**
+     * OK
+     */
+    200: Array<QuizRequest>;
+};
+
+export type GetQuizzesResponse = GetQuizzesResponses[keyof GetQuizzesResponses];
+
+export type CreateQuizData = {
+    body: CreateQuizRequestDto;
+    path?: never;
+    query?: never;
+    url: '/api/quiz';
+};
+
+export type CreateQuizResponses = {
+    /**
+     * OK
+     */
+    200: QuizResponse;
+};
+
+export type CreateQuizResponse = CreateQuizResponses[keyof CreateQuizResponses];
 
 export type SubmitAnswersData = {
     body: SubmitAnswerRequest;
@@ -148,22 +213,6 @@ export type LoginResponses = {
 };
 
 export type LoginResponse = LoginResponses[keyof LoginResponses];
-
-export type GetQuizzesData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/api/quiz';
-};
-
-export type GetQuizzesResponses = {
-    /**
-     * OK
-     */
-    200: Array<QuizRequest>;
-};
-
-export type GetQuizzesResponse = GetQuizzesResponses[keyof GetQuizzesResponses];
 
 export type GetAllQuizQuestionsData = {
     body?: never;
