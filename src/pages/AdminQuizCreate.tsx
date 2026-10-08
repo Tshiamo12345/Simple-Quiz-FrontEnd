@@ -54,7 +54,6 @@ function AdminQuizCreate() {
 
     const createMutation = useCreateQuiz(undefined, {
         onSuccess: () => {
-            // Refresh the admin quiz list so the new quiz shows up.
             queryClient.invalidateQueries({
                 queryKey: Common.UseGetAllQuizAdminKeyFn(),
             });
@@ -142,28 +141,25 @@ function AdminQuizCreate() {
 
     return (
         <DashboardLayout>
-            <div className="admin-quiz-create">
-                {/* Header */}
-                <div className="row align-items-center mb-4 g-2">
-                    <div className="col-md-2 d-none d-md-block" />
-                    <div className="col-12 col-md-8 text-center">
-                        <h1 className="admin-title mb-1">Create Quiz</h1>
-                        <p className="admin-subtitle mb-0">
-                            Add a new quiz and its questions.
-                        </p>
-                    </div>
-                    <div className="col-md-2 d-none d-md-block" />
+            <div className="row align-items-center mb-4 g-2">
+                <div className="col-md-2 d-none d-md-block" />
+                <div className="col-12 col-md-8 text-center">
+                    <h1 className="fw-bold mb-1">Create Quiz</h1>
+                    <p className="text-secondary mb-0">Add a new quiz and its questions.</p>
                 </div>
+                <div className="col-md-2 d-none d-md-block" />
+            </div>
 
-                {formError && (
-                    <div className="alert alert-danger" role="alert">
-                        {formError}
-                    </div>
-                )}
+            {formError && (
+                <div className="alert alert-danger" role="alert">
+                    {formError}
+                </div>
+            )}
 
-                <form onSubmit={handleSubmit}>
-                    {/* Quiz details */}
-                    <div className="info-card p-4 mb-4">
+            <form onSubmit={handleSubmit}>
+                {/* Quiz details */}
+                <div className="card shadow-sm mb-4">
+                    <div className="card-body p-4">
                         <h2 className="h5 mb-3">Quiz details</h2>
 
                         <div className="mb-3">
@@ -218,9 +214,11 @@ function AdminQuizCreate() {
                             />
                         </div>
                     </div>
+                </div>
 
-                    {/* Questions */}
-                    <div className="info-card p-4 mb-4">
+                {/* Questions */}
+                <div className="card shadow-sm mb-4">
+                    <div className="card-body p-4">
                         <div className="d-flex justify-content-between align-items-center mb-3">
                             <h2 className="h5 mb-0">Questions ({questions.length})</h2>
                             <button
@@ -234,7 +232,7 @@ function AdminQuizCreate() {
                         </div>
 
                         {questions.length === 0 && (
-                            <p className="text-muted mb-0">
+                            <p className="text-secondary mb-0">
                                 No questions yet. Click <strong>Add question</strong> to start.
                             </p>
                         )}
@@ -322,23 +320,23 @@ function AdminQuizCreate() {
                             </div>
                         ))}
                     </div>
+                </div>
 
-                    {/* Actions */}
-                    <div className="d-flex justify-content-end gap-2">
-                        <button
-                            type="button"
-                            className="btn btn-outline-secondary"
-                            onClick={handleCancel}
-                            disabled={isSaving}
-                        >
-                            Cancel
-                        </button>
-                        <button type="submit" className="btn btn-brand" disabled={isSaving}>
-                            {isSaving ? 'Creating…' : 'Create quiz'}
-                        </button>
-                    </div>
-                </form>
-            </div>
+                {/* Actions */}
+                <div className="d-flex justify-content-end gap-2">
+                    <button
+                        type="button"
+                        className="btn btn-outline-secondary"
+                        onClick={handleCancel}
+                        disabled={isSaving}
+                    >
+                        Cancel
+                    </button>
+                    <button type="submit" className="btn btn-primary" disabled={isSaving}>
+                        {isSaving ? 'Creating…' : 'Create quiz'}
+                    </button>
+                </div>
+            </form>
         </DashboardLayout>
     );
 }

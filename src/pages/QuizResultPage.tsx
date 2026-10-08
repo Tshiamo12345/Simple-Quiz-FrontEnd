@@ -19,25 +19,23 @@ function QuizResultPage() {
     const result = state?.result ?? null;
     const questions = state?.questions ?? [];
 
-    // If someone hits this route directly without going through submit,
-    // send them back to the quiz.
     if (!result) {
         return (
             <DashboardLayout>
-                <div className="page-back-row">
+                <div className="mb-3">
                     <button
                         type="button"
-                        className="btn-back"
+                        className="btn btn-link text-decoration-none px-0"
                         onClick={() => navigate(`/quiz/${quizId}`)}
                     >
                         ← Back to Quiz
                     </button>
                 </div>
 
-                <header className="page-heading">
-                    <p className="eyebrow">Results</p>
-                    <h1>No Results Yet</h1>
-                    <div className="heading-rule" aria-hidden="true" />
+                <header className="text-center mb-4">
+                    <p className="text-uppercase text-primary fw-bold small mb-1">Results</p>
+                    <h1 className="fw-bold mb-2">No Results Yet</h1>
+                    <div className="mx-auto bg-success rounded" style={{ width: 64, height: 3 }} aria-hidden="true" />
                 </header>
 
                 <div className="alert alert-info">
@@ -47,7 +45,6 @@ function QuizResultPage() {
         );
     }
 
-    // Question text lookup by id
     const questionTextById = new Map<string, string>();
     questions.forEach((q, i) => {
         if (q.questionId) {
@@ -59,50 +56,54 @@ function QuizResultPage() {
     const correct = result.correct ?? 0;
     const total = result.total ?? questions.length;
 
-    // Score tone — just for the ring color
-    const tone = score >= 75 ? 'is-high' : score >= 50 ? 'is-mid' : 'is-low';
+    const tone = score >= 75 ? 'success' : score >= 50 ? 'warning' : 'danger';
+    const barClass =
+        score >= 75 ? 'bg-success' : score >= 50 ? 'bg-warning' : 'bg-danger';
 
     return (
         <DashboardLayout>
-            <div className="page-back-row">
+            <div className="mb-3">
                 <button
                     type="button"
-                    className="btn-back"
+                    className="btn btn-link text-decoration-none px-0"
                     onClick={() => navigate('/dashboard')}
                 >
                     ← Back to Dashboard
                 </button>
             </div>
 
-            <header className="page-heading">
-                <p className="eyebrow">Results</p>
-                <h1>Quiz Results</h1>
-                <div className="heading-rule" aria-hidden="true" />
+            <header className="text-center mb-4">
+                <p className="text-uppercase text-primary fw-bold small mb-1">Results</p>
+                <h1 className="fw-bold mb-2">Quiz Results</h1>
+                <div className="mx-auto bg-success rounded" style={{ width: 64, height: 3 }} aria-hidden="true" />
             </header>
 
             {/* Score card */}
-            <section className={`result-card ${tone}`} aria-live="polite">
-                <p className="result-card-label">Your Score</p>
-                <p className="result-card-score">{score}%</p>
-                <p className="result-card-meta">
-                    {correct} correct out of {total}
-                </p>
+            <section className={`card shadow-sm border-${tone} mb-4`} aria-live="polite">
+                <div className="card-body text-center">
+                    <p className="text-secondary small text-uppercase fw-bold mb-1">
+                        Your Score
+                    </p>
+                    <p className={`display-4 fw-bold text-${tone} mb-2`}>{score}%</p>
+                    <p className="text-secondary mb-3">
+                        {correct} correct out of {total}
+                    </p>
 
-                {/* progress bar */}
-                <div className="result-bar" aria-hidden="true">
-                    <div
-                        className="result-bar-fill"
-                        style={{ width: `${Math.max(0, Math.min(100, score))}%` }}
-                    />
+                    <div className="progress" role="progressbar" aria-hidden="true">
+                        <div
+                            className={`progress-bar ${barClass}`}
+                            style={{ width: `${Math.max(0, Math.min(100, score))}%` }}
+                        />
+                    </div>
                 </div>
             </section>
 
             {/* Per-question breakdown */}
             {result.details && result.details.length > 0 && (
-                <section className="result-breakdown">
-                    <h2 className="result-breakdown-title">Breakdown</h2>
+                <section className="mb-4">
+                    <h2 className="h5 fw-bold mb-3">Breakdown</h2>
 
-                    <ul className="result-list">
+                    <ul className="list-unstyled d-flex flex-column gap-3">
                         {result.details.map((d, index) => {
                             const qid = d.questionId ?? `q-${index}`;
                             const questionText =
@@ -111,46 +112,50 @@ function QuizResultPage() {
                             return (
                                 <li
                                     key={qid}
-                                    className={`result-item ${
-                                        d.correct ? 'is-correct' : 'is-wrong'
+                                    className={`card shadow-sm border-${
+                                        d.correct ? 'success' : 'danger'
                                     }`}
                                 >
-                                    <div className="result-item-header">
-                                        <span className="result-item-number">
-                                            {index + 1}.
-                                        </span>
-                                        <span className="result-item-question">
-                                            {questionText}
-                                        </span>
-                                        <span className="result-item-mark">
-                                            {d.correct ? '✓' : '✕'}
-                                        </span>
-                                    </div>
-
-                                    <div className="result-item-answers">
-                                        <p className="result-item-line">
-                                            <span className="result-item-label">Your answer</span>
-                                            <span
-                                                className={
-                                                    d.correct
-                                                        ? 'result-item-value is-correct'
-                                                        : 'result-item-value is-wrong'
-                                                }
-                                            >
-                                                {d.chosenAnswer ?? '—'}
+                                    <div className="card-body">
+                                        <div className="d-flex align-items-start gap-2 mb-2">
+                                            <span className="fw-bold">{index + 1}.</span>
+                                            <span className="flex-grow-1 fw-semibold">
+                                                {questionText}
                                             </span>
-                                        </p>
+                                            <span
+                                                className={`fw-bold ${
+                                                    d.correct ? 'text-success' : 'text-danger'
+                                                }`}
+                                            >
+                                                {d.correct ? '✓' : '✕'}
+                                            </span>
+                                        </div>
 
-                                        {!d.correct && (
-                                            <p className="result-item-line">
-                                                <span className="result-item-label">
-                                                    Correct answer
+                                        <div className="d-flex flex-column gap-1">
+                                            <p className="d-flex justify-content-between mb-0">
+                                                <span className="text-secondary small">
+                                                    Your answer
                                                 </span>
-                                                <span className="result-item-value is-correct">
-                                                    {d.correctAnswer ?? '—'}
+                                                <span
+                                                    className={`fw-semibold ${
+                                                        d.correct ? 'text-success' : 'text-danger'
+                                                    }`}
+                                                >
+                                                    {d.chosenAnswer ?? '—'}
                                                 </span>
                                             </p>
-                                        )}
+
+                                            {!d.correct && (
+                                                <p className="d-flex justify-content-between mb-0">
+                                                    <span className="text-secondary small">
+                                                        Correct answer
+                                                    </span>
+                                                    <span className="fw-semibold text-success">
+                                                        {d.correctAnswer ?? '—'}
+                                                    </span>
+                                                </p>
+                                            )}
+                                        </div>
                                     </div>
                                 </li>
                             );
@@ -159,17 +164,17 @@ function QuizResultPage() {
                 </section>
             )}
 
-            <div className="result-actions">
+            <div className="d-flex justify-content-center gap-2">
                 <button
                     type="button"
-                    className="btn-back"
+                    className="btn btn-outline-secondary"
                     onClick={() => navigate(`/quiz/${quizId}`)}
                 >
                     Retake Quiz
                 </button>
                 <button
                     type="button"
-                    className="btn btn-brand"
+                    className="btn btn-primary"
                     onClick={() => navigate('/dashboard')}
                 >
                     Back to Dashboard

@@ -26,7 +26,6 @@ const emptyForm: AuthFormState = {
 
 const OTP_LENGTH = 6;
 
-/** Pulls an HTTP status out of whatever shape the error arrived in. */
 const getStatus = (err: unknown): number | undefined => {
     const anyErr = err as any;
 
@@ -123,8 +122,6 @@ function AuthPage({ initialMode = 'login' }: AuthPageProps) {
             setMode('login');
             setFormData((current) => ({ ...current, password: '', confirmPassword: '' }));
 
-            // Sign the new user straight in. If this fails, they land on the
-            // sign-in form with the login error already displayed.
             if (credentials?.username && credentials.password) {
                 loginMutation.mutate({ body: credentials });
             }
@@ -249,167 +246,61 @@ function AuthPage({ initialMode = 'login' }: AuthPageProps) {
     /* -------------------------------- view ------------------------------- */
 
     return (
-        <main className="auth-page">
-            <section className="auth-card">
-                <header className="auth-header">
-                    <p className="eyebrow">
-                        {isVerifying ? 'Verify your email' : isSignUp ? 'Get started' : 'Welcome back'}
-                    </p>
-                    <h1>
-                        {isVerifying ? 'Check your inbox' : isSignUp ? 'Create an account' : 'Sign in'}
-                    </h1>
-                    <div className="heading-rule" aria-hidden="true" />
-                </header>
-
-                {isVerifying ? (
-                    <form onSubmit={handleVerifySubmit} autoComplete="off">
-                        {/* Decoy inputs to absorb browser autofill */}
-                        <input
-                            type="text"
-                            name="fake-username"
-                            style={{ display: 'none' }}
-                            tabIndex={-1}
-                            autoComplete="username"
-                        />
-                        <input
-                            type="password"
-                            name="fake-password"
-                            style={{ display: 'none' }}
-                            tabIndex={-1}
-                            autoComplete="current-password"
-                        />
-
-                        <p className="auth-hint">
-                            We sent a {OTP_LENGTH}-digit code to <strong>{pendingEmail}</strong>.
-                            Enter it below to activate your account.
+        <main className="min-vh-100 d-flex align-items-center justify-content-center bg-light py-5 px-3">
+            <section
+                className="card shadow-sm w-100"
+                style={{ maxWidth: 420 }}
+            >
+                <div className="card-body p-4">
+                    <header className="text-center mb-4">
+                        <p className="text-uppercase text-primary fw-bold small mb-1">
+                            {isVerifying ? 'Verify your email' : isSignUp ? 'Get started' : 'Welcome back'}
                         </p>
+                        <h1 className="fw-bold mb-3">
+                            {isVerifying ? 'Check your inbox' : isSignUp ? 'Create an account' : 'Sign in'}
+                        </h1>
+                        <div className="mx-auto bg-success rounded" style={{ width: 64, height: 3 }} aria-hidden="true" />
+                    </header>
 
-                        <div className="mb-3">
-                            <label htmlFor="otp" className="form-label">Verification code</label>
-                            <input
-                                id="otp"
-                                className="form-control auth-input"
-                                type="text"
-                                name="otp"
-                                value={otp}
-                                onChange={handleOtpChange}
-                                placeholder="Enter the 6-digit code"
-                                inputMode="numeric"
-                                autoComplete="off"
-                                maxLength={OTP_LENGTH}
-                                autoFocus
-                                required
-                            />
-                        </div>
-
-                        {notice && (
-                            <div className="alert alert-success" role="status">
-                                {notice}
-                            </div>
-                        )}
-
-                        {error && (
-                            <div className="alert alert-danger" role="alert">
-                                {error}
-                            </div>
-                        )}
-
-                        <button
-                            type="submit"
-                            className="btn btn-brand w-100"
-                            disabled={verifyMutation.isPending || otp.length !== OTP_LENGTH}
-                        >
-                            {verifyMutation.isPending ? 'Verifying...' : 'Verify & continue'}
-                        </button>
-
-                        <button type="button" className="auth-toggle" onClick={backToSignUp}>
-                            Wrong email? Go back
-                        </button>
-                    </form>
-                ) : (
-                    <>
-                        <form onSubmit={handleSubmit} autoComplete="off">
-                            {/* Decoy inputs to absorb browser autofill */}
+                    {isVerifying ? (
+                        <form onSubmit={handleVerifySubmit} autoComplete="off">
                             <input
                                 type="text"
                                 name="fake-username"
-                                style={{ display: 'none' }}
+                                className="d-none"
                                 tabIndex={-1}
                                 autoComplete="username"
                             />
                             <input
                                 type="password"
                                 name="fake-password"
-                                style={{ display: 'none' }}
+                                className="d-none"
                                 tabIndex={-1}
                                 autoComplete="current-password"
                             />
 
+                            <p className="text-secondary small">
+                                We sent a {OTP_LENGTH}-digit code to <strong>{pendingEmail}</strong>.
+                                Enter it below to activate your account.
+                            </p>
+
                             <div className="mb-3">
-                                <label htmlFor="username" className="form-label">Username</label>
+                                <label htmlFor="otp" className="form-label">Verification code</label>
                                 <input
-                                    id="username"
-                                    className="form-control auth-input"
+                                    id="otp"
+                                    className="form-control"
                                     type="text"
-                                    name="username"
-                                    value={formData.username}
-                                    onChange={handleChange}
-                                    placeholder="Enter your username"
+                                    name="otp"
+                                    value={otp}
+                                    onChange={handleOtpChange}
+                                    placeholder="Enter the 6-digit code"
+                                    inputMode="numeric"
                                     autoComplete="off"
+                                    maxLength={OTP_LENGTH}
+                                    autoFocus
                                     required
                                 />
                             </div>
-
-                            {isSignUp && (
-                                <div className="mb-3">
-                                    <label htmlFor="email" className="form-label">Email</label>
-                                    <input
-                                        id="email"
-                                        className="form-control auth-input"
-                                        type="email"
-                                        name="email"
-                                        value={formData.email}
-                                        onChange={handleChange}
-                                        placeholder="Enter your email"
-                                        autoComplete="off"
-                                        required
-                                    />
-                                </div>
-                            )}
-
-                            <div className="mb-3">
-                                <label htmlFor="password" className="form-label">Password</label>
-                                <input
-                                    id="password"
-                                    className="form-control auth-input"
-                                    type="password"
-                                    name="password"
-                                    value={formData.password}
-                                    onChange={handleChange}
-                                    placeholder="Enter your password"
-                                    autoComplete="new-password"
-                                    required
-                                />
-                            </div>
-
-                            {isSignUp && (
-                                <div className="mb-3">
-                                    <label htmlFor="confirmPassword" className="form-label">
-                                        Confirm password
-                                    </label>
-                                    <input
-                                        id="confirmPassword"
-                                        className="form-control auth-input"
-                                        type="password"
-                                        name="confirmPassword"
-                                        value={formData.confirmPassword}
-                                        onChange={handleChange}
-                                        placeholder="Re-enter your password"
-                                        autoComplete="new-password"
-                                        required
-                                    />
-                                </div>
-                            )}
 
                             {notice && (
                                 <div className="alert alert-success" role="status">
@@ -425,26 +316,143 @@ function AuthPage({ initialMode = 'login' }: AuthPageProps) {
 
                             <button
                                 type="submit"
-                                className="btn btn-brand w-100"
-                                disabled={loginMutation.isPending || signupMutation.isPending}
+                                className="btn btn-primary w-100"
+                                disabled={verifyMutation.isPending || otp.length !== OTP_LENGTH}
                             >
-                                {isSignUp
-                                    ? signupMutation.isPending
-                                        ? 'Creating account...'
-                                        : 'Sign Up'
-                                    : loginMutation.isPending
-                                        ? 'Signing in...'
-                                        : 'Sign In'}
+                                {verifyMutation.isPending ? 'Verifying...' : 'Verify & continue'}
+                            </button>
+
+                            <button
+                                type="button"
+                                className="btn btn-link w-100 mt-2 text-decoration-none"
+                                onClick={backToSignUp}
+                            >
+                                Wrong email? Go back
                             </button>
                         </form>
+                    ) : (
+                        <>
+                            <form onSubmit={handleSubmit} autoComplete="off">
+                                <input
+                                    type="text"
+                                    name="fake-username"
+                                    className="d-none"
+                                    tabIndex={-1}
+                                    autoComplete="username"
+                                />
+                                <input
+                                    type="password"
+                                    name="fake-password"
+                                    className="d-none"
+                                    tabIndex={-1}
+                                    autoComplete="current-password"
+                                />
 
-                        <button type="button" className="auth-toggle" onClick={toggleMode}>
-                            {isSignUp
-                                ? 'Already have an account? Sign in'
-                                : "Don't have an account? Sign up"}
-                        </button>
-                    </>
-                )}
+                                <div className="mb-3">
+                                    <label htmlFor="username" className="form-label">Username</label>
+                                    <input
+                                        id="username"
+                                        className="form-control"
+                                        type="text"
+                                        name="username"
+                                        value={formData.username}
+                                        onChange={handleChange}
+                                        placeholder="Enter your username"
+                                        autoComplete="off"
+                                        required
+                                    />
+                                </div>
+
+                                {isSignUp && (
+                                    <div className="mb-3">
+                                        <label htmlFor="email" className="form-label">Email</label>
+                                        <input
+                                            id="email"
+                                            className="form-control"
+                                            type="email"
+                                            name="email"
+                                            value={formData.email}
+                                            onChange={handleChange}
+                                            placeholder="Enter your email"
+                                            autoComplete="off"
+                                            required
+                                        />
+                                    </div>
+                                )}
+
+                                <div className="mb-3">
+                                    <label htmlFor="password" className="form-label">Password</label>
+                                    <input
+                                        id="password"
+                                        className="form-control"
+                                        type="password"
+                                        name="password"
+                                        value={formData.password}
+                                        onChange={handleChange}
+                                        placeholder="Enter your password"
+                                        autoComplete="new-password"
+                                        required
+                                    />
+                                </div>
+
+                                {isSignUp && (
+                                    <div className="mb-3">
+                                        <label htmlFor="confirmPassword" className="form-label">
+                                            Confirm password
+                                        </label>
+                                        <input
+                                            id="confirmPassword"
+                                            className="form-control"
+                                            type="password"
+                                            name="confirmPassword"
+                                            value={formData.confirmPassword}
+                                            onChange={handleChange}
+                                            placeholder="Re-enter your password"
+                                            autoComplete="new-password"
+                                            required
+                                        />
+                                    </div>
+                                )}
+
+                                {notice && (
+                                    <div className="alert alert-success" role="status">
+                                        {notice}
+                                    </div>
+                                )}
+
+                                {error && (
+                                    <div className="alert alert-danger" role="alert">
+                                        {error}
+                                    </div>
+                                )}
+
+                                <button
+                                    type="submit"
+                                    className="btn btn-primary w-100"
+                                    disabled={loginMutation.isPending || signupMutation.isPending}
+                                >
+                                    {isSignUp
+                                        ? signupMutation.isPending
+                                            ? 'Creating account...'
+                                            : 'Sign Up'
+                                        : loginMutation.isPending
+                                            ? 'Signing in...'
+                                            : 'Sign In'}
+                                </button>
+                            </form>
+
+                            <button
+                                type="button"
+                                className="btn btn-link w-100 mt-2 text-decoration-none"
+                                onClick={toggleMode}
+                            >
+                                {isSignUp
+                                    ? 'Already have an account? Sign in'
+                                    : "Don't have an account? Sign up"}
+                            </button>
+                        </>
+                    )}
+                </div>
             </section>
         </main>
     );

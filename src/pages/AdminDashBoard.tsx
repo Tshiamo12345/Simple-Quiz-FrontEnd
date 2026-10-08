@@ -22,17 +22,16 @@ type QuizAttempt = {
 };
 
 type SignupPoint = {
-    date: string;    // "Mon 12" or "2025-04-12"
+    date: string;
     signups: number;
 };
 
 const stats: Stat[] = [
-    { label: 'Total Users',     value: 100, icon: '👥', accent: '#4f46e5' },
-    { label: 'Total Quizzes',   value: 50,  icon: '📝', accent: '#0891b2' },
-    { label: 'Total Questions', value: 500, icon: '❓', accent: '#059669' },
+    { label: 'Total Users',     value: 100, icon: '👥', accent: '#0d6efd' },
+    { label: 'Total Quizzes',   value: 50,  icon: '📝', accent: '#0dcaf0' },
+    { label: 'Total Questions', value: 500, icon: '❓', accent: '#198754' },
 ];
 
-// TODO: replace with GET /api/admin/signups?range=14d
 const signups: SignupPoint[] = [
     { date: 'Apr 01', signups: 2 },
     { date: 'Apr 02', signups: 5 },
@@ -41,7 +40,7 @@ const signups: SignupPoint[] = [
     { date: 'Apr 05', signups: 1 },
     { date: 'Apr 06', signups: 4 },
     { date: 'Apr 07', signups: 6 },
-    { date: 'Apr 08', signups: 12 },   // spike
+    { date: 'Apr 08', signups: 12 },
     { date: 'Apr 09', signups: 3 },
     { date: 'Apr 10', signups: 5 },
     { date: 'Apr 11', signups: 7 },
@@ -50,7 +49,6 @@ const signups: SignupPoint[] = [
     { date: 'Apr 14', signups: 6 },
 ];
 
-// TODO: replace with GET /api/admin/quiz-attempts
 const quizAttempts: QuizAttempt[] = [
     { quiz: 'Java Basics',     attempts: 82 },
     { quiz: 'React Hooks',     attempts: 67 },
@@ -63,74 +61,78 @@ const quizAttempts: QuizAttempt[] = [
 function AdminDashBoard() {
     return (
         <DashboardLayout>
-            <div className="admin-dashboard">
-                {/* Header */}
-                <div className="d-flex flex-wrap justify-content-center align-items-center mb-4 gap-2 text-center">
-                    <div>
-                        <h1 className="admin-title mb-1">Admin Dashboard</h1>
-                        <p className="admin-subtitle mb-0">Overview of your quiz platform</p>
-                    </div>
-                </div>
+            <div className="text-center mb-4">
+                <h1 className="fw-bold mb-1">Admin Dashboard</h1>
+                <p className="text-secondary mb-0">Overview of your quiz platform</p>
+            </div>
 
-                {/* Stat cards */}
-                <div className="row g-3 mb-4">
-                    {stats.map((stat) => (
-                        <div className="col-12 col-md-4" key={stat.label}>
-                            <div className="stat-card h-100">
+            {/* Stat cards */}
+            <div className="row g-3 mb-4">
+                {stats.map((stat) => (
+                    <div className="col-12 col-md-4" key={stat.label}>
+                        <div className="card shadow-sm h-100">
+                            <div className="card-body d-flex align-items-center gap-3">
                                 <div
-                                    className="stat-icon"
-                                    style={{ backgroundColor: `${stat.accent}1a`, color: stat.accent }}
+                                    className="d-flex align-items-center justify-content-center rounded-circle fs-4"
+                                    style={{
+                                        width: 48,
+                                        height: 48,
+                                        backgroundColor: `${stat.accent}1a`,
+                                        color: stat.accent,
+                                    }}
                                 >
                                     {stat.icon}
                                 </div>
                                 <div>
-                                    <p className="stat-label mb-1">{stat.label}</p>
-                                    <p className="stat-value mb-0">{stat.value}</p>
+                                    <p className="text-secondary small mb-1">{stat.label}</p>
+                                    <p className="fs-3 fw-bold mb-0">{stat.value}</p>
                                 </div>
                             </div>
                         </div>
-                    ))}
-                </div>
+                    </div>
+                ))}
+            </div>
 
-                {/* Info panels */}
-                <div className="row g-3">
-                    {/* LEFT — User Registrations */}
-                    <div className="col-12 col-lg-6">
-                        <div className="info-card h-100 d-flex flex-column">
-                            <h2 className="info-card-title">User Registrations</h2>
-                            <p className="info-card-text">
+            {/* Info panels */}
+            <div className="row g-3">
+                {/* LEFT — User Registrations */}
+                <div className="col-12 col-lg-6">
+                    <div className="card shadow-sm h-100">
+                        <div className="card-body d-flex flex-column">
+                            <h2 className="h5 fw-bold">User Registrations</h2>
+                            <p className="text-secondary small">
                                 Number of people who have registered on the platform.
                                 Use this to track growth over time and identify
                                 spikes in new sign-ups.
                             </p>
 
-                            <div className="chart-wrapper mt-2">
+                            <div className="mt-2">
                                 <ResponsiveContainer width="100%" height={240}>
                                     <BarChart
                                         data={signups}
                                         margin={{ top: 8, right: 8, left: -16, bottom: 0 }}
                                     >
-                                        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                                        <CartesianGrid strokeDasharray="3 3" stroke="#dee2e6" />
                                         <XAxis
                                             dataKey="date"
-                                            tick={{ fontSize: 11, fill: '#6b7280' }}
+                                            tick={{ fontSize: 11, fill: '#6c757d' }}
                                             interval={1}
                                         />
                                         <YAxis
-                                            tick={{ fontSize: 11, fill: '#6b7280' }}
+                                            tick={{ fontSize: 11, fill: '#6c757d' }}
                                             allowDecimals={false}
                                         />
                                         <Tooltip
-                                            cursor={{ fill: 'rgba(5, 150, 105, 0.06)' }}
+                                            cursor={{ fill: 'rgba(25, 135, 84, 0.06)' }}
                                             contentStyle={{
                                                 borderRadius: 8,
-                                                border: '1px solid #e5e7eb',
+                                                border: '1px solid #dee2e6',
                                                 fontSize: 12,
                                             }}
                                         />
                                         <Bar
                                             dataKey="signups"
-                                            fill="#059669"
+                                            fill="#198754"
                                             radius={[4, 4, 0, 0]}
                                         />
                                     </BarChart>
@@ -138,46 +140,48 @@ function AdminDashBoard() {
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    {/* RIGHT — Most Popular Language */}
-                    <div className="col-12 col-lg-6">
-                        <div className="info-card h-100 d-flex flex-column">
-                            <h2 className="info-card-title">Most Popular Language</h2>
-                            <p className="info-card-text">
+                {/* RIGHT — Most Popular Language */}
+                <div className="col-12 col-lg-6">
+                    <div className="card shadow-sm h-100">
+                        <div className="card-body d-flex flex-column">
+                            <h2 className="h5 fw-bold">Most Popular Language</h2>
+                            <p className="text-secondary small">
                                 The programming language with the most quiz attempts.
                                 Useful for deciding which topics to expand next.
                             </p>
 
-                            <div className="chart-wrapper mt-2">
+                            <div className="mt-2">
                                 <ResponsiveContainer width="100%" height={240}>
                                     <BarChart
                                         data={quizAttempts}
                                         margin={{ top: 8, right: 8, left: -16, bottom: 0 }}
                                     >
-                                        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                                        <CartesianGrid strokeDasharray="3 3" stroke="#dee2e6" />
                                         <XAxis
                                             dataKey="quiz"
-                                            tick={{ fontSize: 11, fill: '#6b7280' }}
+                                            tick={{ fontSize: 11, fill: '#6c757d' }}
                                             interval={0}
                                             angle={-20}
                                             textAnchor="end"
                                             height={50}
                                         />
                                         <YAxis
-                                            tick={{ fontSize: 11, fill: '#6b7280' }}
+                                            tick={{ fontSize: 11, fill: '#6c757d' }}
                                             allowDecimals={false}
                                         />
                                         <Tooltip
-                                            cursor={{ fill: 'rgba(79, 70, 229, 0.06)' }}
+                                            cursor={{ fill: 'rgba(13, 110, 253, 0.06)' }}
                                             contentStyle={{
                                                 borderRadius: 8,
-                                                border: '1px solid #e5e7eb',
+                                                border: '1px solid #dee2e6',
                                                 fontSize: 12,
                                             }}
                                         />
                                         <Bar
                                             dataKey="attempts"
-                                            fill="#4f46e5"
+                                            fill="#0d6efd"
                                             radius={[6, 6, 0, 0]}
                                         />
                                     </BarChart>

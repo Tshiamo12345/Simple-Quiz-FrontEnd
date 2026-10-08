@@ -29,37 +29,31 @@ const STATUS_BADGE: Record<Status, string> = {
     suspended: 'text-bg-dark',
 };
 
-/* ------------------------------------------------------------------ */
-/* Demo data layer — replace with real API calls when the backend     */
-/* is ready. Every function here simulates network latency.           */
-/* ------------------------------------------------------------------ */
-
 const DEMO_USERS: User[] = [
-    { id: 'u_01', name: 'Amara Okafor',     email: 'amara.okafor@example.com',   role: 'admin',  status: 'active',    createdAt: '2024-01-12T09:24:00Z' },
-    { id: 'u_02', name: 'Liam Novak',       email: 'liam.novak@example.com',     role: 'editor', status: 'active',    createdAt: '2024-02-03T14:10:00Z' },
-    { id: 'u_03', name: 'Sofia Marchetti',  email: 'sofia.m@example.com',        role: 'user',   status: 'invited',   createdAt: '2024-02-18T11:45:00Z' },
-    { id: 'u_04', name: 'Kenji Tanaka',     email: 'kenji.tanaka@example.com',   role: 'editor', status: 'active',    createdAt: '2024-03-01T08:02:00Z' },
-    { id: 'u_05', name: 'Priya Raghavan',   email: 'priya.r@example.com',        role: 'user',   status: 'suspended', createdAt: '2024-03-09T17:30:00Z' },
-    { id: 'u_06', name: 'Noah Bergström',   email: 'noah.b@example.com',         role: 'user',   status: 'active',    createdAt: '2024-03-22T13:15:00Z' },
-    { id: 'u_07', name: 'Fatima Al-Sayed',  email: 'fatima.alsayed@example.com', role: 'admin',  status: 'active',    createdAt: '2024-04-04T10:00:00Z' },
-    { id: 'u_08', name: 'Diego Ramírez',    email: 'diego.r@example.com',        role: 'user',   status: 'invited',   createdAt: '2024-04-19T15:55:00Z' },
-    { id: 'u_09', name: 'Elena Petrova',    email: 'elena.p@example.com',        role: 'editor', status: 'active',    createdAt: '2024-05-02T07:40:00Z' },
-    { id: 'u_10', name: 'Marcus Chen',      email: 'marcus.chen@example.com',    role: 'user',   status: 'active',    createdAt: '2024-05-17T19:20:00Z' },
-    { id: 'u_11', name: 'Zara Hussain',     email: 'zara.h@example.com',         role: 'user',   status: 'suspended', createdAt: '2024-06-01T12:05:00Z' },
-    { id: 'u_12', name: 'Oliver Brandt',    email: 'oliver.b@example.com',       role: 'editor', status: 'active',    createdAt: '2024-06-14T16:45:00Z' },
-    { id: 'u_13', name: 'Ingrid Larsen',    email: 'ingrid.l@example.com',       role: 'user',   status: 'invited',   createdAt: '2024-06-28T09:10:00Z' },
-    { id: 'u_14', name: 'Rafael Souza',     email: 'rafael.souza@example.com',   role: 'user',   status: 'active',    createdAt: '2024-07-05T14:35:00Z' },
-    { id: 'u_15', name: 'Hana Kobayashi',   email: 'hana.k@example.com',         role: 'admin',  status: 'active',    createdAt: '2024-07-21T11:00:00Z' },
-    { id: 'u_16', name: 'Samuel Adeyemi',   email: 'samuel.a@example.com',       role: 'user',   status: 'active',    createdAt: '2024-08-02T08:25:00Z' },
-    { id: 'u_17', name: 'Chloé Dubois',     email: 'chloe.dubois@example.com',   role: 'editor', status: 'invited',   createdAt: '2024-08-16T13:50:00Z' },
-    { id: 'u_18', name: 'Viktor Ivanov',    email: 'viktor.i@example.com',       role: 'user',   status: 'suspended', createdAt: '2024-08-29T18:15:00Z' },
-    { id: 'u_19', name: 'Maya Rosenberg',   email: 'maya.r@example.com',         role: 'user',   status: 'active',    createdAt: '2024-09-07T10:30:00Z' },
-    { id: 'u_20', name: 'Thomas Wright',    email: 'thomas.w@example.com',       role: 'user',   status: 'active',    createdAt: '2024-09-19T16:00:00Z' },
+    { id: 'u_01', name: 'Amara Okafor', email: 'amara.okafor@example.com', role: 'admin', status: 'active', createdAt: '2024-01-12T09:24:00Z' },
+    { id: 'u_02', name: 'Liam Novak', email: 'liam.novak@example.com', role: 'editor', status: 'active', createdAt: '2024-02-03T14:10:00Z' },
+    { id: 'u_03', name: 'Sofia Marchetti', email: 'sofia.m@example.com', role: 'user', status: 'invited', createdAt: '2024-02-18T11:45:00Z' },
+    { id: 'u_04', name: 'Kenji Tanaka', email: 'kenji.tanaka@example.com', role: 'editor', status: 'active', createdAt: '2024-03-01T08:02:00Z' },
+    { id: 'u_05', name: 'Priya Raghavan', email: 'priya.r@example.com', role: 'user', status: 'suspended', createdAt: '2024-03-09T17:30:00Z' },
+    { id: 'u_06', name: 'Noah Bergström', email: 'noah.b@example.com', role: 'user', status: 'active', createdAt: '2024-03-22T13:15:00Z' },
+    { id: 'u_07', name: 'Fatima Al-Sayed', email: 'fatima.alsayed@example.com', role: 'admin', status: 'active', createdAt: '2024-04-04T10:00:00Z' },
+    { id: 'u_08', name: 'Diego Ramírez', email: 'diego.r@example.com', role: 'user', status: 'invited', createdAt: '2024-04-19T15:55:00Z' },
+    { id: 'u_09', name: 'Elena Petrova', email: 'elena.p@example.com', role: 'editor', status: 'active', createdAt: '2024-05-02T07:40:00Z' },
+    { id: 'u_10', name: 'Marcus Chen', email: 'marcus.chen@example.com', role: 'user', status: 'active', createdAt: '2024-05-17T19:20:00Z' },
+    { id: 'u_11', name: 'Zara Hussain', email: 'zara.h@example.com', role: 'user', status: 'suspended', createdAt: '2024-06-01T12:05:00Z' },
+    { id: 'u_12', name: 'Oliver Brandt', email: 'oliver.b@example.com', role: 'editor', status: 'active', createdAt: '2024-06-14T16:45:00Z' },
+    { id: 'u_13', name: 'Ingrid Larsen', email: 'ingrid.l@example.com', role: 'user', status: 'invited', createdAt: '2024-06-28T09:10:00Z' },
+    { id: 'u_14', name: 'Rafael Souza', email: 'rafael.souza@example.com', role: 'user', status: 'active', createdAt: '2024-07-05T14:35:00Z' },
+    { id: 'u_15', name: 'Hana Kobayashi', email: 'hana.k@example.com', role: 'admin', status: 'active', createdAt: '2024-07-21T11:00:00Z' },
+    { id: 'u_16', name: 'Samuel Adeyemi', email: 'samuel.a@example.com', role: 'user', status: 'active', createdAt: '2024-08-02T08:25:00Z' },
+    { id: 'u_17', name: 'Chloé Dubois', email: 'chloe.dubois@example.com', role: 'editor', status: 'invited', createdAt: '2024-08-16T13:50:00Z' },
+    { id: 'u_18', name: 'Viktor Ivanov', email: 'viktor.i@example.com', role: 'user', status: 'suspended', createdAt: '2024-08-29T18:15:00Z' },
+    { id: 'u_19', name: 'Maya Rosenberg', email: 'maya.r@example.com', role: 'user', status: 'active', createdAt: '2024-09-07T10:30:00Z' },
+    { id: 'u_20', name: 'Thomas Wright', email: 'thomas.w@example.com', role: 'user', status: 'active', createdAt: '2024-09-19T16:00:00Z' },
 ];
 
 const delay = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
-// In-memory store — mutated by the demo CRUD helpers below.
 let demoStore: User[] = [...DEMO_USERS];
 
 const demoApi = {
@@ -106,15 +100,9 @@ const demoApi = {
     },
 };
 
-/* ------------------------------------------------------------------ */
-/* Modal shell — renders into document.body so fixed positioning is   */
-/* relative to the viewport, not to any transformed ancestor.         */
-/* ------------------------------------------------------------------ */
-
 interface ModalShellProps {
     children: ReactNode;
     onClose: () => void;
-    /** Disable ESC / backdrop close while an action is in flight. */
     busy?: boolean;
 }
 
@@ -155,8 +143,6 @@ function ModalShell({ children, onClose, busy = false }: ModalShellProps) {
     );
 }
 
-/* ------------------------------------------------------------------ */
-
 function AdminUsers() {
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
@@ -189,7 +175,6 @@ function AdminUsers() {
         loadUsers();
     }, []);
 
-    // Reset to page 1 whenever the filters change.
     useEffect(() => {
         setPage(1);
     }, [search, roleFilter, statusFilter]);
@@ -235,10 +220,11 @@ function AdminUsers() {
     return (
         <DashboardLayout>
             <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-                <div>
-                    <h1 className="admin-title mb-1">Manage Users</h1>
-                    <p className="admin-subtitle mb-0">
-                        {filtered.length} of {users.length} user{users.length === 1 ? '' : 's'}
+                <div className="col-md-2 d-none d-md-block" />
+                <div className="col-12 col-md-8 text-center">
+                    <h1 className="fw-bold mb-1">Manage Users</h1>
+                    <p className="text-secondary mb-0">
+                        create, edit and remove users
                     </p>
                 </div>
                 <button
@@ -248,6 +234,9 @@ function AdminUsers() {
                 >
                     + Add user
                 </button>
+                <p className="text-secondary mb-0">
+                    {filtered.length} of {users.length} user{users.length === 1 ? '' : 's'}
+                </p>
             </div>
 
             {error && (
@@ -329,7 +318,7 @@ function AdminUsers() {
 
                             {!loading && pageItems.length === 0 && (
                                 <tr>
-                                    <td colSpan={6} className="text-center text-muted py-5">
+                                    <td colSpan={6} className="text-center text-secondary py-5">
                                         No users match your filters.
                                     </td>
                                 </tr>
@@ -339,7 +328,7 @@ function AdminUsers() {
                                 pageItems.map((u) => (
                                     <tr key={u.id}>
                                         <td className="fw-semibold">{u.name}</td>
-                                        <td className="text-muted">{u.email}</td>
+                                        <td className="text-secondary">{u.email}</td>
                                         <td>
                                             <span className={`badge ${ROLE_BADGE[u.role]}`}>{u.role}</span>
                                         </td>
@@ -371,7 +360,7 @@ function AdminUsers() {
 
                 {totalPages > 1 && (
                     <div className="card-footer d-flex justify-content-between align-items-center">
-                        <span className="text-muted small">
+                        <span className="text-secondary small">
                             Page {page} of {totalPages}
                         </span>
                         <div className="btn-group">
@@ -447,8 +436,6 @@ function AdminUsers() {
         </DashboardLayout>
     );
 }
-
-/* ------------------------------------------------------------------ */
 
 interface UserFormModalProps {
     user: User | null;

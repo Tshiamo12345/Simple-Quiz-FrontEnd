@@ -29,19 +29,27 @@ function SideBar() {
     };
 
     const linkClass = ({ isActive }: { isActive: boolean }) =>
-        `sidebar-link ${isActive ? 'active' : ''}`;
+        [
+            'sidebar-link d-block py-2 px-3 rounded text-decoration-none',
+            isActive
+                ? 'bg-primary text-white fw-semibold'
+                : 'text-primary',
+        ].join(' ');
 
     return (
         <>
-            <aside className="sidebar p-3 d-flex flex-column">
-                <p className="sidebar-label">
+            <aside
+                className="d-flex flex-column flex-shrink-0 p-3 bg-body border-end"
+                style={{ width: 230 }}
+            >
+                <p className="text-uppercase text-secondary fw-bold small mb-3">
                     {isAdmin ? 'Administration' : 'Workspace'}
                 </p>
 
-                <nav className="nav flex-column gap-2" aria-label="Main navigation">
+                <nav className="nav flex-column gap-1" aria-label="Main navigation">
                     {isAdmin ? (
                         <>
-                            <NavLink to="/admin" className={linkClass} end>
+                            <NavLink to="/admin" end className={linkClass}>
                                 Admin Dashboard
                             </NavLink>
                             <NavLink to="/admin/users" className={linkClass}>
@@ -63,11 +71,11 @@ function SideBar() {
                     )}
                 </nav>
 
-                <div className="mt-auto pt-3 sidebar-footer">
+                <div className="mt-auto pt-3 border-top">
                     <button
                         type="button"
                         onClick={() => setShowConfirm(true)}
-                        className="sidebar-link logout-btn w-100 text-start"
+                        className="sidebar-link d-block py-2 px-3 rounded text-decoration-none text-primary w-100 text-start bg-transparent border-0"
                     >
                         Logout
                     </button>
@@ -75,7 +83,6 @@ function SideBar() {
             </aside>
 
             {showConfirm && (
-                /* ...same modal as before... */
                 <div
                     className="modal fade show d-block"
                     tabIndex={-1}

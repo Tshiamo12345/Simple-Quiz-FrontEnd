@@ -11,7 +11,6 @@ function QuizDashboard() {
     const navigate = useNavigate();
     const { data: quizzes, isLoading, isError, error } = useGetQuizzes();
 
-    // Filter by title only, case-insensitive
     const filteredQuizzes = useMemo(() => {
         const term = search.trim().toLowerCase();
         if (!term) return quizzes ?? [];
@@ -22,17 +21,17 @@ function QuizDashboard() {
 
     return (
         <DashboardLayout>
-            <header className="page-heading text-center">
-                <p className="eyebrow">Workspace</p>
-                <h1>Quiz Dashboard</h1>
-                <div className="heading-rule" aria-hidden="true" />
+            <header className="text-center mb-4">
+                <p className="text-uppercase text-primary fw-bold small mb-1">Workspace</p>
+                <h1 className="fw-bold mb-2">Quiz Dashboard</h1>
+                <div className="mx-auto bg-success rounded" style={{ width: 64, height: 3 }} aria-hidden="true" />
             </header>
 
-            {/* Search — filters by title only */}
-            <div className="dashboard-toolbar">
+            <div className="d-flex justify-content-center mb-4">
                 <input
                     type="search"
-                    className="form-control search-input"
+                    className="form-control"
+                    style={{ maxWidth: 420 }}
                     placeholder="Search quizzes by title…"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
@@ -40,7 +39,6 @@ function QuizDashboard() {
                 />
             </div>
 
-            {/* Loading */}
             {isLoading && (
                 <div className="d-flex justify-content-center py-5">
                     <div className="spinner-border text-primary" role="status">
@@ -49,66 +47,66 @@ function QuizDashboard() {
                 </div>
             )}
 
-            {/* Error */}
             {isError && (
                 <div className="alert alert-danger" role="alert">
                     Failed to load quizzes: {(error as Error)?.message ?? 'Unknown error'}
                 </div>
             )}
 
-            {/* Empty — no quizzes at all */}
             {!isLoading && !isError && (quizzes?.length ?? 0) === 0 && (
                 <div className="alert alert-info">No quizzes yet.</div>
             )}
 
-            {/* Empty — search matched nothing */}
             {!isLoading && !isError && (quizzes?.length ?? 0) > 0 && filteredQuizzes.length === 0 && (
                 <div className="alert alert-warning">
                     No quizzes match "{search}".
                 </div>
             )}
 
-            {/* List */}
             {!isLoading && !isError && filteredQuizzes.length > 0 && (
                 <section className="row g-3" aria-label="Quiz overview">
                     {filteredQuizzes.map((quiz, index) => (
                         <div className="col-md-4" key={quiz.id ?? index}>
-                            <article className="quiz-card h-100 d-flex flex-column">
-                                <div className="quiz-card-header">
-                                    <span
-                                        className={`quiz-card-badge ${quiz.taken ? 'is-completed' : 'is-pending'
+                            <article className="card shadow-sm h-100">
+                                <div className="card-body d-flex flex-column">
+                                    <div className="d-flex flex-column gap-2 mb-3">
+                                        <span
+                                            className={`badge align-self-start ${
+                                                quiz.taken ? 'text-bg-success' : 'text-bg-primary'
                                             }`}
+                                        >
+                                            {quiz.taken ? 'Completed' : 'Not started'}
+                                        </span>
+                                        <h3 className="h5 fw-bold text-primary mb-0">
+                                            {quiz.title ?? '—'}
+                                        </h3>
+                                    </div>
+
+                                    <ul className="list-unstyled d-flex flex-column gap-2 mb-3">
+                                        <li className="d-flex justify-content-between">
+                                            <span className="text-secondary">Questions</span>
+                                            <span className="fw-semibold">{quiz.numberOfQuestions ?? 0}</span>
+                                        </li>
+                                        <li className="d-flex justify-content-between">
+                                            <span className="text-secondary">Author</span>
+                                            <span className="fw-semibold">{quiz.author ?? '—'}</span>
+                                        </li>
+                                    </ul>
+
+                                    <button
+                                        type="button"
+                                        className="btn btn-primary mt-auto w-100"
+                                        onClick={() => setSelectedQuiz(quiz)}
                                     >
-                                        {quiz.taken ? 'Completed' : 'Not started'}
-                                    </span>
-                                    <h3 className="quiz-card-title">{quiz.title ?? '—'}</h3>
+                                        View
+                                    </button>
                                 </div>
-
-                                <ul className="quiz-card-meta">
-                                    <li>
-                                        <span className="meta-label">Questions</span>
-                                        <span className="meta-value">{quiz.numberOfQuestions ?? 0}</span>
-                                    </li>
-                                    <li>
-                                        <span className="meta-label">Author</span>
-                                        <span className="meta-value">{quiz.author ?? '—'}</span>
-                                    </li>
-                                </ul>
-
-                                <button
-                                    type="button"
-                                    className="btn btn-brand mt-auto w-100"
-                                    onClick={() => setSelectedQuiz(quiz)}
-                                >
-                                    View
-                                </button>
                             </article>
                         </div>
                     ))}
                 </section>
             )}
 
-            {/* Modal */}
             {selectedQuiz &&
                 createPortal(
                     <>
@@ -163,7 +161,7 @@ function QuizDashboard() {
                                         </button>
                                         <button
                                             type="button"
-                                            className="btn btn-brand"
+                                            className="btn btn-primary"
                                             disabled={!selectedQuiz.id}
                                             onClick={() => {
                                                 if (!selectedQuiz.id) return;

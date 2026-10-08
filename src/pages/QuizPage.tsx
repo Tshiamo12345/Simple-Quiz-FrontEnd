@@ -29,10 +29,8 @@ function QuizPage() {
 
     const submitMutation = useSubmitAnswers([], {
         onSuccess: (raw) => {
-            // hey-api returns { data, error, response, request }
             const body = (raw as unknown as { data?: QuizResultResponse })?.data ?? null;
 
-            // navigate to the dedicated result page, passing the grade along
             navigate(`/quiz/${quizId}/result`, {
                 state: { result: body, questions },
                 replace: true,
@@ -103,23 +101,23 @@ function QuizPage() {
 
     return (
         <DashboardLayout>
-            <div className="page-back-row">
+            <div className="mb-3">
                 <button
                     type="button"
-                    className="btn-back"
+                    className="btn btn-link text-decoration-none px-0"
                     onClick={() => navigate('/dashboard')}
                 >
                     ← Back
                 </button>
             </div>
 
-            <header className="page-heading">
-                <p className="eyebrow">Quiz</p>
-                <h1>Quiz Questions</h1>
-                <div className="heading-rule" aria-hidden="true" />
+            <header className="text-center mb-4">
+                <p className="text-uppercase text-primary fw-bold small mb-1">Quiz</p>
+                <h1 className="fw-bold mb-2">Quiz Questions</h1>
+                <div className="mx-auto bg-success rounded" style={{ width: 64, height: 3 }} aria-hidden="true" />
             </header>
 
-            <ol className="quiz-questions">
+            <ol className="list-unstyled d-flex flex-column gap-4">
                 {questions.map((q, index) => {
                     const qid = q.questionId ?? `q-${index}`;
                     const options = [
@@ -129,39 +127,41 @@ function QuizPage() {
                     ].filter((o) => o.label);
 
                     return (
-                        <li key={qid} className="quiz-question">
-                            <p className="quiz-question-text">
-                                <span className="quiz-question-number">{index + 1}.</span>{' '}
-                                {q.questionText ?? 'Untitled question'}
-                            </p>
+                        <li key={qid} className="card shadow-sm">
+                            <div className="card-body">
+                                <p className="fw-semibold mb-3">
+                                    <span className="me-2">{index + 1}.</span>
+                                    {q.questionText ?? 'Untitled question'}
+                                </p>
 
-                            <div className="quiz-options">
-                                {options.map((opt) => {
-                                    const isChosen = answers[qid] === opt.label;
-                                    const classes = ['quiz-option'];
-                                    if (isChosen) classes.push('is-selected');
-
-                                    return (
-                                        <label
-                                            key={opt.key}
-                                            htmlFor={`${qid}-${opt.key}`}
-                                            className={classes.join(' ')}
-                                        >
-                                            <input
-                                                className="form-check-input"
-                                                type="radio"
-                                                name={qid}
-                                                id={`${qid}-${opt.key}`}
-                                                value={opt.label}
-                                                checked={isChosen}
-                                                onChange={() => handleSelect(qid, opt.label!)}
-                                            />
-                                            <span className="quiz-option-label">
-                                                <strong>{opt.key}.</strong> {opt.label}
-                                            </span>
-                                        </label>
-                                    );
-                                })}
+                                <div className="d-flex flex-column gap-2">
+                                    {options.map((opt) => {
+                                        const isChosen = answers[qid] === opt.label;
+                                        return (
+                                            <label
+                                                key={opt.key}
+                                                htmlFor={`${qid}-${opt.key}`}
+                                                className={`d-flex align-items-start gap-2 p-3 border rounded ${
+                                                    isChosen ? 'border-primary bg-primary-subtle' : ''
+                                                }`}
+                                                style={{ cursor: 'pointer' }}
+                                            >
+                                                <input
+                                                    className="form-check-input mt-1"
+                                                    type="radio"
+                                                    name={qid}
+                                                    id={`${qid}-${opt.key}`}
+                                                    value={opt.label}
+                                                    checked={isChosen}
+                                                    onChange={() => handleSelect(qid, opt.label!)}
+                                                />
+                                                <span>
+                                                    <strong>{opt.key}.</strong> {opt.label}
+                                                </span>
+                                            </label>
+                                        );
+                                    })}
+                                </div>
                             </div>
                         </li>
                     );
@@ -169,15 +169,15 @@ function QuizPage() {
             </ol>
 
             {submitError && (
-                <p className="quiz-submit-error" role="alert">
+                <p className="text-danger mt-3" role="alert">
                     {submitError}
                 </p>
             )}
 
-            <div className="quiz-submit-row">
+            <div className="d-flex justify-content-center mt-4">
                 <button
                     type="button"
-                    className="btn btn-brand"
+                    className="btn btn-primary"
                     disabled={!allAnswered || submitMutation.isPending}
                     onClick={handleSubmit}
                 >
