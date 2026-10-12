@@ -4,15 +4,16 @@ import TopBar from './TopBar';
 
 type DashboardLayoutProps = {
     children: ReactNode;
+    hideSidebar?: boolean;
 };
 
-function DashboardLayout({ children }: DashboardLayoutProps) {
+function DashboardLayout({ children, hideSidebar = false }: DashboardLayoutProps) {
     return (
         <div className="d-flex flex-column vh-100 bg-light">
             <TopBar />
 
             <div className="d-flex flex-grow-1 overflow-hidden">
-                <SideBar />
+                {!hideSidebar && <SideBar />}
 
                 <main className="flex-grow-1 overflow-auto p-4 p-lg-5">
                     <div className="mx-auto w-100" style={{ maxWidth: 1100 }}>

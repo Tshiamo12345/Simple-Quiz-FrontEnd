@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import DashboardLayout from '../component/DashboardLayout';
 import type {
@@ -19,23 +20,22 @@ function QuizResultPage() {
     const result = state?.result ?? null;
     const questions = state?.questions ?? [];
 
+    const [showAnswers, setShowAnswers] = useState(false);
+
+    // ── No result guard ───────────────────────────────────────
     if (!result) {
         return (
-            <DashboardLayout>
-                <div className="mb-3">
-                    <button
-                        type="button"
-                        className="btn btn-link text-decoration-none px-0"
-                        onClick={() => navigate(`/quiz/${quizId}`)}
-                    >
-                        ← Back to Quiz
-                    </button>
-                </div>
-
+            <DashboardLayout hideSidebar>
                 <header className="text-center mb-4">
-                    <p className="text-uppercase text-primary fw-bold small mb-1">Results</p>
+                    <p className="text-uppercase text-primary fw-bold small mb-1">
+                        Results
+                    </p>
                     <h1 className="fw-bold mb-2">No Results Yet</h1>
-                    <div className="mx-auto bg-success rounded" style={{ width: 64, height: 3 }} aria-hidden="true" />
+                    <div
+                        className="mx-auto bg-success rounded"
+                        style={{ width: 64, height: 3 }}
+                        aria-hidden="true"
+                    />
                 </header>
 
                 <div className="alert alert-info">
@@ -45,10 +45,14 @@ function QuizResultPage() {
         );
     }
 
+    // ── Derived data ──────────────────────────────────────────
     const questionTextById = new Map<string, string>();
     questions.forEach((q, i) => {
         if (q.questionId) {
-            questionTextById.set(q.questionId, q.questionText ?? `Question ${i + 1}`);
+            questionTextById.set(
+                q.questionId,
+                q.questionText ?? `Question ${i + 1}`
+            );
         }
     });
 
@@ -56,129 +60,193 @@ function QuizResultPage() {
     const correct = result.correct ?? 0;
     const total = result.total ?? questions.length;
 
+    const passed = score >= 50;
     const tone = score >= 75 ? 'success' : score >= 50 ? 'warning' : 'danger';
     const barClass =
         score >= 75 ? 'bg-success' : score >= 50 ? 'bg-warning' : 'bg-danger';
 
+    const hasDetails = !!result.details && result.details.length > 0;
+
     return (
-        <DashboardLayout>
-            <div className="mb-3">
-                <button
-                    type="button"
-                    className="btn btn-link text-decoration-none px-0"
-                    onClick={() => navigate('/dashboard')}
+        <DashboardLayout hideSidebar>
+            {/* ── Card (centered, narrower — matches QuizPage) ── */}
+            <div className="d-flex justify-content-center">
+                <div
+                    className="card shadow-sm border-0 overflow-hidden w-100"
+                    style={{ maxWidth: 720 }}
                 >
-                    ← Back to Dashboard
-                </button>
-            </div>
+                    <div className="card-body p-3 p-md-4">
+                        {/* ── Header ── */}
+                        <div className="text-center mb-3 pb-3 border-bottom">
+                            <p className="text-uppercase text-muted small fw-semibold mb-1">
+                                Results
+                            </p>
+                            <h2 className="h5 fw-bold mb-0 text-dark">
+                                Quiz Results
+                            </h2>
+                        </div>
 
-            <header className="text-center mb-4">
-                <p className="text-uppercase text-primary fw-bold small mb-1">Results</p>
-                <h1 className="fw-bold mb-2">Quiz Results</h1>
-                <div className="mx-auto bg-success rounded" style={{ width: 64, height: 3 }} aria-hidden="true" />
-            </header>
+                        {/* ── Score ── */}
+                        <section
+                            className={`text-center mb-4 p-3 rounded-3 bg-${tone}-subtle`}
+                            aria-live="polite"
+                        >
+                            <p className="text-secondary small text-uppercase fw-bold mb-1">
+                                Your Score
+                            </p>
+                            <p
+                                className={`display-4 fw-bold text-${tone} mb-2`}
+                            >
+                                {score}%
+                            </p>
+                            <p className="text-secondary mb-2">
+                                {correct} correct out of {total}
+                            </p>
 
-            {/* Score card */}
-            <section className={`card shadow-sm border-${tone} mb-4`} aria-live="polite">
-                <div className="card-body text-center">
-                    <p className="text-secondary small text-uppercase fw-bold mb-1">
-                        Your Score
-                    </p>
-                    <p className={`display-4 fw-bold text-${tone} mb-2`}>{score}%</p>
-                    <p className="text-secondary mb-3">
-                        {correct} correct out of {total}
-                    </p>
+                            {/* Pass / Fail message */}
+                            <p
+                                className={`fw-bold text-${tone} mb-3`}
+                                style={{ fontSize: '1.05rem' }}
+                            >
+                                {passed ? (
+                                    <>
+                                        <span aria-hidden="true">🎉 </span>
+                                        Congratulations — you passed!
+                                    </>
+                                ) : (
+                                    <>
+                                        <span aria-hidden="true">📚 </span>
+                                        Sorry, you didn't pass. Keep trying!
+                                    </>
+                                )}
+                            </p>
 
-                    <div className="progress" role="progressbar" aria-hidden="true">
-                        <div
-                            className={`progress-bar ${barClass}`}
-                            style={{ width: `${Math.max(0, Math.min(100, score))}%` }}
-                        />
-                    </div>
-                </div>
-            </section>
+                            <div
+                                className="progress"
+                                role="progressbar"
+                                aria-hidden="true"
+                                style={{ height: 6 }}
+                            >
+                                <div
+                                    className={`progress-bar ${barClass}`}
+                                    style={{
+                                        width: `${Math.max(
+                                            0,
+                                            Math.min(100, score)
+                                        )}%`,
+                                    }}
+                                />
+                            </div>
+                        </section>
 
-            {/* Per-question breakdown */}
-            {result.details && result.details.length > 0 && (
-                <section className="mb-4">
-                    <h2 className="h5 fw-bold mb-3">Breakdown</h2>
+                        {/* ── Breakdown (toggled by View Answers) ── */}
+                        {showAnswers && hasDetails && (
+                            <section className="mb-3">
+                                <h3 className="h6 fw-bold mb-3">
+                                    Answer Breakdown
+                                </h3>
 
-                    <ul className="list-unstyled d-flex flex-column gap-3">
-                        {result.details.map((d, index) => {
-                            const qid = d.questionId ?? `q-${index}`;
-                            const questionText =
-                                questionTextById.get(qid) ?? `Question ${index + 1}`;
+                                <ul className="list-unstyled d-flex flex-column gap-2 mb-0">
+                                    {result.details!.map((d, index) => {
+                                        const qid =
+                                            d.questionId ?? `q-${index}`;
+                                        const questionText =
+                                            questionTextById.get(qid) ??
+                                            `Question ${index + 1}`;
 
-                            return (
-                                <li
-                                    key={qid}
-                                    className={`card shadow-sm border-${
-                                        d.correct ? 'success' : 'danger'
-                                    }`}
-                                >
-                                    <div className="card-body">
-                                        <div className="d-flex align-items-start gap-2 mb-2">
-                                            <span className="fw-bold">{index + 1}.</span>
-                                            <span className="flex-grow-1 fw-semibold">
-                                                {questionText}
-                                            </span>
-                                            <span
-                                                className={`fw-bold ${
-                                                    d.correct ? 'text-success' : 'text-danger'
+                                        return (
+                                            <li
+                                                key={qid}
+                                                className={`card border-${
+                                                    d.correct
+                                                        ? 'success'
+                                                        : 'danger'
                                                 }`}
                                             >
-                                                {d.correct ? '✓' : '✕'}
-                                            </span>
-                                        </div>
+                                                <div className="card-body p-3">
+                                                    <div className="d-flex align-items-start gap-2 mb-2">
+                                                        <span className="fw-bold">
+                                                            {index + 1}.
+                                                        </span>
+                                                        <span className="flex-grow-1 fw-semibold">
+                                                            {questionText}
+                                                        </span>
+                                                        <span
+                                                            className={`fw-bold ${
+                                                                d.correct
+                                                                    ? 'text-success'
+                                                                    : 'text-danger'
+                                                            }`}
+                                                        >
+                                                            {d.correct
+                                                                ? '✓'
+                                                                : '✕'}
+                                                        </span>
+                                                    </div>
 
-                                        <div className="d-flex flex-column gap-1">
-                                            <p className="d-flex justify-content-between mb-0">
-                                                <span className="text-secondary small">
-                                                    Your answer
-                                                </span>
-                                                <span
-                                                    className={`fw-semibold ${
-                                                        d.correct ? 'text-success' : 'text-danger'
-                                                    }`}
-                                                >
-                                                    {d.chosenAnswer ?? '—'}
-                                                </span>
-                                            </p>
+                                                    <div className="d-flex flex-column gap-1">
+                                                        <p className="d-flex justify-content-between mb-0">
+                                                            <span className="text-secondary small">
+                                                                Your answer
+                                                            </span>
+                                                            <span
+                                                                className={`fw-semibold ${
+                                                                    d.correct
+                                                                        ? 'text-success'
+                                                                        : 'text-danger'
+                                                                }`}
+                                                            >
+                                                                {d.chosenAnswer ??
+                                                                    '—'}
+                                                            </span>
+                                                        </p>
 
-                                            {!d.correct && (
-                                                <p className="d-flex justify-content-between mb-0">
-                                                    <span className="text-secondary small">
-                                                        Correct answer
-                                                    </span>
-                                                    <span className="fw-semibold text-success">
-                                                        {d.correctAnswer ?? '—'}
-                                                    </span>
-                                                </p>
-                                            )}
-                                        </div>
-                                    </div>
-                                </li>
-                            );
-                        })}
-                    </ul>
-                </section>
-            )}
+                                                        {!d.correct && (
+                                                            <p className="d-flex justify-content-between mb-0">
+                                                                <span className="text-secondary small">
+                                                                    Correct
+                                                                    answer
+                                                                </span>
+                                                                <span className="fw-semibold text-success">
+                                                                    {d.correctAnswer ??
+                                                                        '—'}
+                                                                </span>
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        );
+                                    })}
+                                </ul>
+                            </section>
+                        )}
+                    </div>
 
-            <div className="d-flex justify-content-center gap-2">
-                <button
-                    type="button"
-                    className="btn btn-outline-secondary"
-                    onClick={() => navigate(`/quiz/${quizId}`)}
-                >
-                    Retake Quiz
-                </button>
-                <button
-                    type="button"
-                    className="btn btn-primary"
-                    onClick={() => navigate('/dashboard')}
-                >
-                    Back to Dashboard
-                </button>
+                    {/* ── Footer with the two buttons ── */}
+                    <div className="card-footer bg-body-tertiary border-top py-3 px-3 px-md-4">
+                        <div className="d-flex justify-content-between align-items-center gap-2">
+                            <button
+                                type="button"
+                                className="btn btn-outline-secondary"
+                                onClick={() => setShowAnswers((v) => !v)}
+                                disabled={!hasDetails}
+                            >
+                                {showAnswers
+                                    ? 'Hide Answers'
+                                    : 'View Answers'}
+                            </button>
+
+                            <button
+                                type="button"
+                                className="btn btn-primary px-4"
+                                onClick={() => navigate('/dashboard')}
+                            >
+                                Done
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </DashboardLayout>
     );

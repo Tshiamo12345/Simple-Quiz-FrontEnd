@@ -113,22 +113,13 @@ function AdminQuizCreate() {
             title: title.trim(),
             language: language.trim(),
             description: description.trim(),
-            questions: questions.map<CreateQuestionRequestDto>((q) => {
-                const correctAnswer =
-                    q.correctKey === 'A'
-                        ? q.optionA
-                        : q.correctKey === 'B'
-                          ? q.optionB
-                          : q.optionC;
-
-                return {
-                    questionText: q.questionText.trim(),
-                    optionA: q.optionA.trim(),
-                    optionB: q.optionB.trim(),
-                    optionC: q.optionC.trim(),
-                    correctAnswer: correctAnswer.trim(),
-                };
-            }),
+            questions: questions.map<CreateQuestionRequestDto>((q) => ({
+                questionText: q.questionText.trim(),
+                optionA: q.optionA.trim(),
+                optionB: q.optionB.trim(),
+                optionC: q.optionC.trim(),
+                correctAnswer: q.correctKey, // sends 'A' | 'B' | 'C'
+            })),
         };
 
         createMutation.mutate({ body: payload });
