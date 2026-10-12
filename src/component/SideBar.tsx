@@ -28,25 +28,35 @@ function SideBar() {
         }
     };
 
+    // Active link: left accent bar + primary tint + bold.
+    // Inactive: muted text with subtle hover.
     const linkClass = ({ isActive }: { isActive: boolean }) =>
         [
-            'sidebar-link d-block py-2 px-3 rounded text-decoration-none',
+            'd-flex align-items-center py-2 ps-3 pe-2 text-decoration-none rounded-end',
+            'border-start border-3',
             isActive
-                ? 'bg-primary text-white fw-semibold'
-                : 'text-primary',
+                ? 'border-primary bg-primary-subtle text-primary fw-semibold'
+                : 'border-transparent text-secondary sidebar-link',
         ].join(' ');
 
     return (
         <>
             <aside
-                className="d-flex flex-column flex-shrink-0 p-3 bg-body border-end"
-                style={{ width: 230 }}
+                className="bg-white border-end d-flex flex-column"
+                style={{ width: 250 }}
             >
-                <p className="text-uppercase text-secondary fw-bold small mb-3">
-                    {isAdmin ? 'Administration' : 'Workspace'}
-                </p>
+                {/* Workspace heading */}
+                <div className="px-4 pt-4 pb-3">
+                    <p className="text-uppercase text-secondary small fw-semibold mb-0 ls-wide">
+                        {isAdmin ? 'Administration' : 'Workspace'}
+                    </p>
+                </div>
 
-                <nav className="nav flex-column gap-1" aria-label="Main navigation">
+                {/* Nav */}
+                <nav
+                    className="nav flex-column gap-1 px-2 pb-3"
+                    aria-label="Main navigation"
+                >
                     {isAdmin ? (
                         <>
                             <NavLink to="/admin" end className={linkClass}>
@@ -71,17 +81,19 @@ function SideBar() {
                     )}
                 </nav>
 
-                <div className="mt-auto pt-3 border-top">
+                {/* Footer */}
+                <div className="mt-auto border-top px-4 py-3">
                     <button
                         type="button"
                         onClick={() => setShowConfirm(true)}
-                        className="sidebar-link d-block py-2 px-3 rounded text-decoration-none text-primary w-100 text-start bg-transparent border-0"
+                        className="btn btn-link text-decoration-none text-secondary fw-semibold px-0 py-0"
                     >
                         Logout
                     </button>
                 </div>
             </aside>
 
+            {/* ── Logout confirmation modal ── */}
             {showConfirm && (
                 <div
                     className="modal fade show d-block"
@@ -96,9 +108,16 @@ function SideBar() {
                         className="modal-dialog modal-dialog-centered"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h5 className="modal-title" id="logout-confirm-title">
+                        <div className="modal-content border-0 rounded-3">
+                            <div className="modal-header border-bottom">
+                                <h5
+                                    className="modal-title fw-bold mb-0"
+                                    id="logout-confirm-title"
+                                    style={{
+                                        fontFamily:
+                                            'Georgia, "Times New Roman", serif',
+                                    }}
+                                >
                                     Log out?
                                 </h5>
                                 <button
@@ -109,20 +128,26 @@ function SideBar() {
                                     disabled={isLoggingOut}
                                 />
                             </div>
-                            <div className="modal-body">
-                                <p className="mb-0">
-                                    Are you sure you want to log out of your account?
+
+                            <div className="modal-body py-4">
+                                <p className="text-secondary mb-0">
+                                    Are you sure you want to log out of your
+                                    account?
                                 </p>
                                 {error && (
-                                    <div className="alert alert-danger mt-3 mb-0" role="alert">
+                                    <div
+                                        className="alert alert-danger mt-3 mb-0"
+                                        role="alert"
+                                    >
                                         {error}
                                     </div>
                                 )}
                             </div>
-                            <div className="modal-footer">
+
+                            <div className="modal-footer border-top bg-white">
                                 <button
                                     type="button"
-                                    className="btn btn-secondary"
+                                    className="btn btn-outline-secondary"
                                     onClick={() => setShowConfirm(false)}
                                     disabled={isLoggingOut}
                                 >
@@ -130,11 +155,13 @@ function SideBar() {
                                 </button>
                                 <button
                                     type="button"
-                                    className="btn btn-danger"
+                                    className="btn btn-danger px-4 fw-semibold"
                                     onClick={confirmLogout}
                                     disabled={isLoggingOut}
                                 >
-                                    {isLoggingOut ? 'Logging out...' : 'Yes, log out'}
+                                    {isLoggingOut
+                                        ? 'Logging out…'
+                                        : 'Yes, log out'}
                                 </button>
                             </div>
                         </div>

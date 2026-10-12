@@ -9,7 +9,7 @@ type DashboardLayoutProps = {
 
 function DashboardLayout({ children, hideSidebar = false }: DashboardLayoutProps) {
     return (
-        <div className="d-flex flex-column vh-100 bg-light">
+        <div className="d-flex flex-column vh-100 bg-body-tertiary">
             <TopBar />
 
             <div className="d-flex flex-grow-1 overflow-hidden">
