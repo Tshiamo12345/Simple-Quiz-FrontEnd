@@ -174,7 +174,7 @@ function QuizPage() {
                 <button
                     type="button"
                     className="btn btn-link text-decoration-none px-0 text-secondary"
-                    onClick={() => navigate('/dashboard')}
+                    onClick={() => navigate('/quizzes')}
                 >
                     ← Back to dashboard
                 </button>

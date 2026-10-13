@@ -5,9 +5,12 @@ import { useGetQuizzes } from '../api/generated/queries';
 import type { QuizRequest } from '../api/generated/requests/types.gen';
 import { useNavigate } from 'react-router-dom';
 
-function QuizDashboard() {
+type QuizFilter = 'all' | 'new' | 'completed';
+
+function QuizzesPage() {
     const [selectedQuiz, setSelectedQuiz] = useState<QuizRequest | null>(null);
     const [search, setSearch] = useState('');
+    const [filter, setFilter] = useState<QuizFilter>('all');
     const navigate = useNavigate();
     const { data: quizzes, isLoading, isError, error } = useGetQuizzes();
 
@@ -18,16 +21,25 @@ function QuizDashboard() {
 
     const filteredQuizzes = useMemo(() => {
         const term = search.trim().toLowerCase();
-        if (!term) return allQuizzes;
-        return allQuizzes.filter((quiz) =>
-            (quiz.title ?? '').toLowerCase().includes(term)
-        );
-    }, [allQuizzes, search]);
+
+        return allQuizzes.filter((quiz) => {
+            // Filter tab
+            if (filter === 'new' && quiz.taken) return false;
+            if (filter === 'completed' && !quiz.taken) return false;
+
+            // Search
+            if (!term) return true;
+            return (
+                (quiz.title ?? '').toLowerCase().includes(term) ||
+                (quiz.author ?? '').toLowerCase().includes(term)
+            );
+        });
+    }, [allQuizzes, search, filter]);
 
     return (
         <DashboardLayout>
-            {/* ── Page header with summary ── */}
-            <header className="pb-4 mb-5 border-bottom">
+            {/* ── Page header ── */}
+            <header className="pb-4 mb-4 border-bottom">
                 <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-4">
                     <div>
                         <p className="text-uppercase text-secondary small fw-semibold mb-2 ls-wide">
@@ -41,7 +53,7 @@ function QuizDashboard() {
                                 letterSpacing: '-0.01em',
                             }}
                         >
-                            Quiz Dashboard
+                            Quizzes
                         </h1>
                         <p className="text-secondary mb-0" style={{ maxWidth: 520 }}>
                             {remainingCount > 0 ? (
@@ -67,7 +79,6 @@ function QuizDashboard() {
                         </p>
                     </div>
 
-                    {/* Search */}
                     <div style={{ minWidth: 300 }}>
                         <label
                             htmlFor="quiz-search"
@@ -79,54 +90,40 @@ function QuizDashboard() {
                             id="quiz-search"
                             type="search"
                             className="form-control form-control-lg border-0 border-bottom rounded-0 bg-transparent px-0"
-                            placeholder="Filter by title…"
+                            placeholder="Filter by title or author…"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
                     </div>
                 </div>
-
-                {/* Stat strip */}
-                {total > 0 && (
-                    <div className="d-flex flex-wrap gap-4 mt-4">
-                        <div>
-                            <div
-                                className="fs-3 fw-bold text-dark"
-                                style={{ fontFamily: 'Georgia, serif' }}
-                            >
-                                {total}
-                            </div>
-                            <div className="text-uppercase text-secondary small fw-semibold ls-wide">
-                                Total
-                            </div>
-                        </div>
-                        <div className="vr d-none d-md-block" />
-                        <div>
-                            <div
-                                className="fs-3 fw-bold text-success"
-                                style={{ fontFamily: 'Georgia, serif' }}
-                            >
-                                {completedCount}
-                            </div>
-                            <div className="text-uppercase text-secondary small fw-semibold ls-wide">
-                                Completed
-                            </div>
-                        </div>
-                        <div className="vr d-none d-md-block" />
-                        <div>
-                            <div
-                                className="fs-3 fw-bold text-primary"
-                                style={{ fontFamily: 'Georgia, serif' }}
-                            >
-                                {remainingCount}
-                            </div>
-                            <div className="text-uppercase text-secondary small fw-semibold ls-wide">
-                                Remaining
-                            </div>
-                        </div>
-                    </div>
-                )}
             </header>
+
+            {/* ── Quizzes heading + filter ── */}
+            <div className="d-flex align-items-baseline justify-content-between mb-3 flex-wrap gap-3">
+                <h2 className="h6 fw-bold text-uppercase text-secondary ls-wide mb-0">
+                    Available quizzes
+                </h2>
+
+                <div className="btn-group btn-group-sm" role="group" aria-label="Filter quizzes">
+                    {(['all', 'new', 'completed'] as const).map((f) => (
+                        <button
+                            key={f}
+                            type="button"
+                            className={`btn ${
+                                filter === f ? 'btn-primary' : 'btn-outline-secondary'
+                            }`}
+                            onClick={() => setFilter(f)}
+                            aria-pressed={filter === f}
+                        >
+                            {f === 'all'
+                                ? `All (${total})`
+                                : f === 'new'
+                                  ? `Not started (${remainingCount})`
+                                  : `Completed (${completedCount})`}
+                        </button>
+                    ))}
+                </div>
+            </div>
 
             {/* ── States ── */}
             {isLoading && (
@@ -149,7 +146,13 @@ function QuizDashboard() {
 
             {!isLoading && !isError && total > 0 && filteredQuizzes.length === 0 && (
                 <div className="alert alert-warning">
-                    No quizzes match "{search}".
+                    {search
+                        ? `No quizzes match "${search}".`
+                        : filter === 'new'
+                          ? "You've completed every quiz. Nice work!"
+                          : filter === 'completed'
+                            ? "You haven't completed any quizzes yet."
+                            : 'No quizzes to show.'}
                 </div>
             )}
 
@@ -170,7 +173,6 @@ function QuizDashboard() {
                                     }}
                                 >
                                     <div className="card-body d-flex flex-column p-4">
-                                        {/* Number + status */}
                                         <div className="d-flex align-items-center justify-content-between mb-3">
                                             <span
                                                 className="text-secondary fw-bold"
@@ -193,23 +195,21 @@ function QuizDashboard() {
                                             </span>
                                         </div>
 
-                                        {/* Title */}
                                         <h3
                                             className="h5 fw-bold mb-1"
                                             style={{
-                                                fontFamily: 'Georgia, "Times New Roman", serif',
+                                                fontFamily:
+                                                    'Georgia, "Times New Roman", serif',
                                                 lineHeight: 1.3,
                                             }}
                                         >
                                             {quiz.title ?? '—'}
                                         </h3>
 
-                                        {/* Author as subline */}
                                         <p className="text-secondary small mb-4">
                                             by {quiz.author ?? 'Unknown'}
                                         </p>
 
-                                        {/* Meta */}
                                         <div className="d-flex align-items-center gap-3 mb-4 small text-secondary">
                                             <span>
                                                 <strong className="text-dark">
@@ -221,7 +221,6 @@ function QuizDashboard() {
                                             <span>{quiz.language ?? 'EN'}</span>
                                         </div>
 
-                                        {/* CTA */}
                                         <button
                                             type="button"
                                             className={`btn mt-auto w-100 fw-semibold ${
@@ -265,7 +264,8 @@ function QuizDashboard() {
                                             <h5
                                                 className="modal-title fw-bold mb-0"
                                                 style={{
-                                                    fontFamily: 'Georgia, "Times New Roman", serif',
+                                                    fontFamily:
+                                                        'Georgia, "Times New Roman", serif',
                                                 }}
                                             >
                                                 {selectedQuiz.title ?? 'Quiz'}
@@ -341,4 +341,4 @@ function QuizDashboard() {
     );
 }
 
-export default QuizDashboard;
+export default QuizzesPage;
