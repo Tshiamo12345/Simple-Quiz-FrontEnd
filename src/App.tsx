@@ -2,7 +2,7 @@ import './App.css';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login.tsx';
 import SignUp from './pages/SignUp.tsx';
-import QuizDashboard from './pages/QuizDashboard.tsx';
+import QuizDashboard from './pages/QuizzesPage.tsx';
 import StatsQuiz from './pages/StatsQuiz.tsx';
 import QuizPage from './pages/QuizPage.tsx';
 import QuizResultPage from './pages/QuizResultPage.tsx';
@@ -13,7 +13,9 @@ import AdminDashBoard from './pages/AdminDashBoard.tsx';
 import AdminUsers from './pages/AdminUsers.tsx';
 import AdminQuizzes from './pages/AdminQuizzes.tsx';
 import AdminQuizCreate from './pages/AdminQuizCreate.tsx';
-
+import QuizzesPage from './pages/QuizzesPage.tsx';
+import MyResultsPage from './pages/MyResultsPage.tsx';
+import StatsPage from './pages/StatsPage.tsx';
 function App() {
   return (
     <Routes>
@@ -23,8 +25,9 @@ function App() {
       <Route element={<ProtectedRoute />}>
         {/* User-only */}
         <Route element={<RequireRole allow={['USER']} />}>
-          <Route path="/dashboard" element={<QuizDashboard />} />
-          <Route path="/stats" element={<StatsQuiz />} />
+          <Route path="/quizzes" element={<QuizzesPage />} />
+          <Route path="/stats" element={<StatsPage />} />
+          <Route path="/results" element={<MyResultsPage />} />
           <Route path="/quiz/:quizId" element={<QuizPage />} />
           <Route path="/quiz/:quizId/result" element={<QuizResultPage />} />
         </Route>

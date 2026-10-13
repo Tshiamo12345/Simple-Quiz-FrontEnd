@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useState, useMemo } from 'react';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import DashboardLayout from '../component/DashboardLayout';
 import type {
     QuizResultResponse,
@@ -11,6 +11,9 @@ type ResultLocationState = {
     questions: QuizQuestionsRequest[] | null;
 };
 
+const PASS_THRESHOLD = 50;
+const GOOD_THRESHOLD = 75;
+
 function QuizResultPage() {
     const { quizId } = useParams<{ quizId: string }>();
     const navigate = useNavigate();
@@ -20,7 +23,19 @@ function QuizResultPage() {
     const result = state?.result ?? null;
     const questions = state?.questions ?? [];
 
+    // All hooks must run before any conditional return.
     const [showAnswers, setShowAnswers] = useState(false);
+
+    // Stable lookup: questionId → question text.
+    const questionTextById = useMemo(() => {
+        const map = new Map<string, string>();
+        questions.forEach((q, i) => {
+            if (q.questionId) {
+                map.set(q.questionId, q.questionText ?? `Question ${i + 1}`);
+            }
+        });
+        return map;
+    }, [questions]);
 
     // ── No result guard ───────────────────────────────────────
     if (!result) {
@@ -46,30 +61,23 @@ function QuizResultPage() {
     }
 
     // ── Derived data ──────────────────────────────────────────
-    const questionTextById = new Map<string, string>();
-    questions.forEach((q, i) => {
-        if (q.questionId) {
-            questionTextById.set(
-                q.questionId,
-                q.questionText ?? `Question ${i + 1}`
-            );
-        }
-    });
-
     const score = result.score ?? 0;
     const correct = result.correct ?? 0;
     const total = result.total ?? questions.length;
 
-    const passed = score >= 50;
-    const tone = score >= 75 ? 'success' : score >= 50 ? 'warning' : 'danger';
-    const barClass =
-        score >= 75 ? 'bg-success' : score >= 50 ? 'bg-warning' : 'bg-danger';
+    const passed = score >= PASS_THRESHOLD;
+    const tone =
+        score >= GOOD_THRESHOLD
+            ? 'success'
+            : score >= PASS_THRESHOLD
+              ? 'warning'
+              : 'danger';
+    const barClass = `bg-${tone}`;
 
     const hasDetails = !!result.details && result.details.length > 0;
 
     return (
         <DashboardLayout hideSidebar>
-            {/* ── Card (centered, narrower — matches QuizPage) ── */}
             <div className="d-flex justify-content-center">
                 <div
                     className="card shadow-sm border-0 overflow-hidden w-100"
@@ -94,16 +102,13 @@ function QuizResultPage() {
                             <p className="text-secondary small text-uppercase fw-bold mb-1">
                                 Your Score
                             </p>
-                            <p
-                                className={`display-4 fw-bold text-${tone} mb-2`}
-                            >
+                            <p className={`display-4 fw-bold text-${tone} mb-2`}>
                                 {score}%
                             </p>
                             <p className="text-secondary mb-2">
                                 {correct} correct out of {total}
                             </p>
 
-                            {/* Pass / Fail message */}
                             <p
                                 className={`fw-bold text-${tone} mb-3`}
                                 style={{ fontSize: '1.05rem' }}
@@ -178,9 +183,16 @@ function QuizResultPage() {
                                                                     : 'text-danger'
                                                             }`}
                                                         >
-                                                            {d.correct
-                                                                ? '✓'
-                                                                : '✕'}
+                                                            <span aria-hidden="true">
+                                                                {d.correct
+                                                                    ? '✓'
+                                                                    : '✕'}
+                                                            </span>
+                                                            <span className="visually-hidden">
+                                                                {d.correct
+                                                                    ? 'Correct'
+                                                                    : 'Incorrect'}
+                                                            </span>
                                                         </span>
                                                     </div>
 
@@ -232,15 +244,13 @@ function QuizResultPage() {
                                 onClick={() => setShowAnswers((v) => !v)}
                                 disabled={!hasDetails}
                             >
-                                {showAnswers
-                                    ? 'Hide Answers'
-                                    : 'View Answers'}
+                                {showAnswers ? 'Hide Answers' : 'View Answers'}
                             </button>
 
                             <button
                                 type="button"
                                 className="btn btn-primary px-4"
-                                onClick={() => navigate('/dashboard')}
+                                onClick={() => navigate('/quizzes')}
                             >
                                 Done
                             </button>

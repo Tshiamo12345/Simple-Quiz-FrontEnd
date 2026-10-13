@@ -71,11 +71,14 @@ function SideBar() {
                         </>
                     ) : (
                         <>
-                            <NavLink to="/dashboard" className={linkClass}>
-                                Quiz Dashboard
+                            <NavLink to="/quizzes" className={linkClass}>
+                                Quizzes
+                            </NavLink>
+                            <NavLink to="/results" className={linkClass}>
+                                My Results
                             </NavLink>
                             <NavLink to="/stats" className={linkClass}>
-                                Quiz Stats
+                                Stats
                             </NavLink>
                         </>
                     )}
