@@ -57,7 +57,7 @@ function AuthPage({ initialMode = 'login' }: AuthPageProps) {
     const loginMutation = useLogin(undefined, {
         onSuccess: async () => {
             await login();
-            navigate('/dashboard', { replace: true });
+            navigate('/quizzes', { replace: true });
         },
         onError: (err: unknown) => {
             console.log('Login error:', err);
